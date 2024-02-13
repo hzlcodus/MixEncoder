@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 5, in <module>
+    from nlp_trainer import TrainWholeModel
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 370
+    if self.model_class in ['MatchParallelEncoder', 'QAMatchModel', ㄴ'PolyEncoder', 'MatchDeformer',
+                                                                       ^^^^^^^^^^^^^
+SyntaxError: invalid syntax

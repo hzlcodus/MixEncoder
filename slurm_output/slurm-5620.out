@@ -1,0 +1,130 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=1, model_class='MatchParallelEncoder', dataset_name='hard_msmarco', label_num=0, composition='pooler', context_num=10, pretrained_bert_path='Luyu/co-condenser-marco-retriever', model_save_prefix='no_reg_v1-', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=True, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=True, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='0', restore=False, val_batch_size=2, train_batch_size=8, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=True, only_final=False, load_model=False, load_model_path=None, save_model_dict='/data/cme/mix/model/', last_model_dict='/data/cme/mix/last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, teacher_loss=False, alpha=0.5, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+**************************************************
+Enrich Layer: [False, False, False, False, False, False, False, False, False, False, False, True]
+**************************************************
+--------------------- model  created ---------------------
+train_step_function is match_train_step_for_qa_input
+[{'params': <generator object Module.parameters at 0x7f2c75637bc0>, 'lr': 1e-05}, {'params': <generator object Module.parameters at 0x7f2c75637ae0>, 'lr': 1e-05}, {'params': <generator object Module.parameters at 0x7f2c75637a00>, 'lr': 1e-05}]
+******************************
+Loading hard_msmarco_train from disk...
+**************************************************
+******************** 1 ********************
+**************************************************
+Training epoch is 1
+**************************************************
+Train 1 epochs, Block num 20, Accumulate num 1, Total update 62006, Remain update 62006
+
+  0%|          | 0/62006 [00:00<?, ?it/s]/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/transformers/modeling_utils.py:905: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 41.2121:   0%|          | 0/62006 [00:01<?, ?it/s]epoch   1 loss 41.2121:   0%|          | 1/62006 [00:01<33:28:48,  1.94s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 34.4233:   0%|          | 1/62006 [00:03<33:28:48,  1.94s/it]epoch   1 loss 34.4233:   0%|          | 2/62006 [00:03<30:01:12,  1.74s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 32.7408:   0%|          | 2/62006 [00:05<30:01:12,  1.74s/it]epoch   1 loss 32.7408:   0%|          | 3/62006 [00:05<28:52:39,  1.68s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 32.8291:   0%|          | 3/62006 [00:06<28:52:39,  1.68s/it]epoch   1 loss 32.8291:   0%|          | 4/62006 [00:06<28:22:28,  1.65s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 33.7447:   0%|          | 4/62006 [00:08<28:22:28,  1.65s/it]epoch   1 loss 33.7447:   0%|          | 5/62006 [00:08<28:05:30,  1.63s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 35.0516:   0%|          | 5/62006 [00:09<28:05:30,  1.63s/it]epoch   1 loss 35.0516:   0%|          | 6/62006 [00:09<27:56:18,  1.62s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 35.9160:   0%|          | 6/62006 [00:11<27:56:18,  1.62s/it]epoch   1 loss 35.9160:   0%|          | 7/62006 [00:11<27:49:55,  1.62s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 35.2244:   0%|          | 7/62006 [00:13<27:49:55,  1.62s/it]epoch   1 loss 35.2244:   0%|          | 8/62006 [00:13<27:45:40,  1.61s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 35.4789:   0%|          | 8/62006 [00:14<27:45:40,  1.61s/it]epoch   1 loss 35.4789:   0%|          | 9/62006 [00:14<27:44:52,  1.61s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 35.1457:   0%|          | 9/62006 [00:16<27:44:52,  1.61s/it]epoch   1 loss 35.1457:   0%|          | 10/62006 [00:16<27:45:03,  1.61s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 36.0681:   0%|          | 10/62006 [00:17<27:45:03,  1.61s/it]epoch   1 loss 36.0681:   0%|          | 11/62006 [00:17<27:44:45,  1.61s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 36.3889:   0%|          | 11/62006 [00:19<27:44:45,  1.61s/it]epoch   1 loss 36.3889:   0%|          | 12/62006 [00:19<27:45:12,  1.61s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 36.3515:   0%|          | 12/62006 [00:21<27:45:12,  1.61s/it]epoch   1 loss 36.3515:   0%|          | 13/62006 [00:21<27:44:57,  1.61s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 35.8755:   0%|          | 13/62006 [00:22<27:44:57,  1.61s/it]epoch   1 loss 35.8755:   0%|          | 14/62006 [00:22<27:47:16,  1.61s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+query_embeddings: torch.Size([8, 50, 768])
+candidate_embeddings: torch.Size([8, 50, 768])
+dot_product: torch.Size([8, 50])
+mask: torch.Size([8, 50])
+epoch   1 loss 36.0479:   0%|          | 14/62006 [00:24<27:47:16,  1.61s/it]epoch   1 loss 36.0479:   0%|          | 15/62006 [00:24<27:47:19,  1.61s/it]a_input_ids: torch.Size([8, 32])
+b_input_ids: torch.Size([8, 50, 128])
+original b_embeddings: torch.Size([400, 10, 768])
+slurmstepd-n01: error: *** JOB 5620 ON n01 CANCELLED AT 2024-02-11T11:40:40 ***

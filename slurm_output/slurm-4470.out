@@ -1,0 +1,9 @@
+tee: logs/ubuntu/poly_16.log: No such file or directory
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 5, in <module>
+    from nlp_trainer import TrainWholeModel
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 30, in <module>
+    from nlp_model import QAClassifierModel, QAClassifierModelConfig, CrossBERT, CrossBERTConfig, ClassifyParallelEncoder, \
+  File "/home/cme/MixEncoder/nlp_model.py", line 4, in <module>
+    from transformers.models.bert.out_vector_modeling_bert import MyBertModel, DecoderLayerChunk
+ModuleNotFoundError: No module named 'transformers.models.bert.out_vector_modeling_bert'

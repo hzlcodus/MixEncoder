@@ -1,0 +1,10 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=50, model_class='PolyEncoder', dataset_name='ubuntu', label_num=0, composition='pooler', context_num=16, pretrained_bert_path='prajjwal1/bert-small', model_save_prefix='', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='0', restore=False, val_batch_size=2, train_batch_size=64, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=False, only_final=False, load_model=False, load_model_path=None, save_model_dict='./model/', last_model_dict='./last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=1e-05)
+local rank: 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
+  warnings.warn("Initializing zero-element tensors is a no-op")
+--------------------- model  created ---------------------
+[{'params': <generator object Module.parameters at 0x7f0fdb2325e0>, 'lr': 5e-05}, {'params': <generator object Module.parameters at 0x7f0fdb2326c0>, 'lr': 5e-05}, {'params': <generator object Module.parameters at 0x7f0fdb2327a0>, 'lr': 5e-05}]
+******************************
+slurmstepd-n02: error: *** JOB 4577 ON n02 CANCELLED AT 2024-01-29T15:40:10 ***

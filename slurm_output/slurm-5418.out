@@ -1,0 +1,988 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=1, model_class='CMCModel', dataset_name='hard_msmarco', label_num=0, composition='pooler', context_num=1, pretrained_bert_path='Luyu/co-condenser-marco-retriever', model_save_prefix='no_reg_v1-', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='1', restore=False, val_batch_size=2, train_batch_size=8, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=True, only_final=False, load_model=False, load_model_path=None, save_model_dict='/data/cme/mix/model/', last_model_dict='/data/cme/mix/last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, teacher_loss=False, alpha=0.5, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+--------------------- model  created ---------------------
+train_step_function is match_train_step_for_qa_input
+[{'params': <generator object Module.parameters at 0x7f6cf4c00040>, 'lr': 1e-05}, {'params': <generator object Module.parameters at 0x7f6cf4c00120>, 'lr': 1e-05}, {'params': <generator object Module.parameters at 0x7f6cf4c00200>, 'lr': 1e-05}, {'params': <generator object Module.parameters at 0x7f6cf4c002e0>, 'lr': 1e-05}]
+******************************
+Processing hard_msmarco_train...
+calling MSMARCODataset init
+Processed dataset is saved at ./dataset/hard_msmarco_train
+**************************************************
+******************** 1 ********************
+**************************************************
+Training epoch is 1
+**************************************************
+Train 1 epochs, Block num 20, Accumulate num 1, Total update 62006, Remain update 62006
+
+
+  0%|          | 0/62006 [00:00<?, ?it/s]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 1.8371:   0%|          | 0/62006 [00:02<?, ?it/s]
+epoch   1 loss 1.8371:   0%|          | 1/62006 [00:02<36:57:41,  2.15s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9468:   0%|          | 1/62006 [00:03<36:57:41,  2.15s/it]
+epoch   1 loss 2.9468:   0%|          | 2/62006 [00:03<31:42:40,  1.84s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.4913:   0%|          | 2/62006 [00:05<31:42:40,  1.84s/it]
+epoch   1 loss 2.4913:   0%|          | 3/62006 [00:05<30:01:21,  1.74s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.6686:   0%|          | 3/62006 [00:07<30:01:21,  1.74s/it]
+epoch   1 loss 2.6686:   0%|          | 4/62006 [00:07<29:18:16,  1.70s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.7888:   0%|          | 4/62006 [00:08<29:18:16,  1.70s/it]
+epoch   1 loss 2.7888:   0%|          | 5/62006 [00:08<28:54:18,  1.68s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.7850:   0%|          | 5/62006 [00:10<28:54:18,  1.68s/it]
+epoch   1 loss 2.7850:   0%|          | 6/62006 [00:10<28:37:47,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9123:   0%|          | 6/62006 [00:11<28:37:47,  1.66s/it]
+epoch   1 loss 2.9123:   0%|          | 7/62006 [00:11<28:28:53,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0330:   0%|          | 7/62006 [00:13<28:28:53,  1.65s/it]
+epoch   1 loss 3.0330:   0%|          | 8/62006 [00:13<28:26:50,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9661:   0%|          | 8/62006 [00:15<28:26:50,  1.65s/it]
+epoch   1 loss 2.9661:   0%|          | 9/62006 [00:15<28:25:18,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9566:   0%|          | 9/62006 [00:16<28:25:18,  1.65s/it]
+epoch   1 loss 2.9566:   0%|          | 10/62006 [00:16<28:21:42,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0402:   0%|          | 10/62006 [00:18<28:21:42,  1.65s/it]
+epoch   1 loss 3.0402:   0%|          | 11/62006 [00:18<28:21:10,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0731:   0%|          | 11/62006 [00:20<28:21:10,  1.65s/it]
+epoch   1 loss 3.0731:   0%|          | 12/62006 [00:20<28:20:23,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.1526:   0%|          | 12/62006 [00:21<28:20:23,  1.65s/it]
+epoch   1 loss 3.1526:   0%|          | 13/62006 [00:21<28:21:40,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0838:   0%|          | 13/62006 [00:23<28:21:40,  1.65s/it]
+epoch   1 loss 3.0838:   0%|          | 14/62006 [00:23<28:22:16,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0655:   0%|          | 14/62006 [00:25<28:22:16,  1.65s/it]
+epoch   1 loss 3.0655:   0%|          | 15/62006 [00:25<28:20:53,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0982:   0%|          | 15/62006 [00:26<28:20:53,  1.65s/it]
+epoch   1 loss 3.0982:   0%|          | 16/62006 [00:26<28:22:23,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0294:   0%|          | 16/62006 [00:28<28:22:23,  1.65s/it]
+epoch   1 loss 3.0294:   0%|          | 17/62006 [00:28<28:22:54,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0679:   0%|          | 17/62006 [00:30<28:22:54,  1.65s/it]
+epoch   1 loss 3.0679:   0%|          | 18/62006 [00:30<28:21:01,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0866:   0%|          | 18/62006 [00:31<28:21:01,  1.65s/it]
+epoch   1 loss 3.0866:   0%|          | 19/62006 [00:31<28:20:14,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0357:   0%|          | 19/62006 [00:33<28:20:14,  1.65s/it]
+epoch   1 loss 3.0357:   0%|          | 20/62006 [00:33<28:16:13,  1.64s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0280:   0%|          | 20/62006 [00:34<28:16:13,  1.64s/it]
+epoch   1 loss 3.0280:   0%|          | 21/62006 [00:34<28:16:17,  1.64s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9976:   0%|          | 21/62006 [00:36<28:16:17,  1.64s/it]
+epoch   1 loss 2.9976:   0%|          | 22/62006 [00:36<28:15:49,  1.64s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0017:   0%|          | 22/62006 [00:38<28:15:49,  1.64s/it]
+epoch   1 loss 3.0017:   0%|          | 23/62006 [00:38<28:16:47,  1.64s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9870:   0%|          | 23/62006 [00:39<28:16:47,  1.64s/it]
+epoch   1 loss 2.9870:   0%|          | 24/62006 [00:39<28:14:32,  1.64s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9707:   0%|          | 24/62006 [00:41<28:14:32,  1.64s/it]
+epoch   1 loss 2.9707:   0%|          | 25/62006 [00:41<28:20:41,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9523:   0%|          | 25/62006 [00:43<28:20:41,  1.65s/it]
+epoch   1 loss 2.9523:   0%|          | 26/62006 [00:43<28:21:52,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0007:   0%|          | 26/62006 [00:44<28:21:52,  1.65s/it]
+epoch   1 loss 3.0007:   0%|          | 27/62006 [00:44<28:21:44,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9936:   0%|          | 27/62006 [00:46<28:21:44,  1.65s/it]
+epoch   1 loss 2.9936:   0%|          | 28/62006 [00:46<28:22:15,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9973:   0%|          | 28/62006 [00:48<28:22:15,  1.65s/it]
+epoch   1 loss 2.9973:   0%|          | 29/62006 [00:48<28:22:00,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9786:   0%|          | 29/62006 [00:49<28:22:00,  1.65s/it]
+epoch   1 loss 2.9786:   0%|          | 30/62006 [00:49<28:23:25,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0005:   0%|          | 30/62006 [00:51<28:23:25,  1.65s/it]
+epoch   1 loss 3.0005:   0%|          | 31/62006 [00:51<28:23:08,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9920:   0%|          | 31/62006 [00:53<28:23:08,  1.65s/it]
+epoch   1 loss 2.9920:   0%|          | 32/62006 [00:53<28:21:51,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0034:   0%|          | 32/62006 [00:54<28:21:51,  1.65s/it]
+epoch   1 loss 3.0034:   0%|          | 33/62006 [00:54<28:18:39,  1.64s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9835:   0%|          | 33/62006 [00:56<28:18:39,  1.64s/it]
+epoch   1 loss 2.9835:   0%|          | 34/62006 [00:56<28:18:02,  1.64s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0129:   0%|          | 34/62006 [00:58<28:18:02,  1.64s/it]
+epoch   1 loss 3.0129:   0%|          | 35/62006 [00:58<28:19:50,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9801:   0%|          | 35/62006 [00:59<28:19:50,  1.65s/it]
+epoch   1 loss 2.9801:   0%|          | 36/62006 [00:59<28:20:51,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9708:   0%|          | 36/62006 [01:01<28:20:51,  1.65s/it]
+epoch   1 loss 2.9708:   0%|          | 37/62006 [01:01<28:23:48,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9621:   0%|          | 37/62006 [01:02<28:23:48,  1.65s/it]
+epoch   1 loss 2.9621:   0%|          | 38/62006 [01:02<28:22:18,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9813:   0%|          | 38/62006 [01:04<28:22:18,  1.65s/it]
+epoch   1 loss 2.9813:   0%|          | 39/62006 [01:04<28:23:24,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9833:   0%|          | 39/62006 [01:06<28:23:24,  1.65s/it]
+epoch   1 loss 2.9833:   0%|          | 40/62006 [01:06<28:24:24,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9957:   0%|          | 40/62006 [01:07<28:24:24,  1.65s/it]
+epoch   1 loss 2.9957:   0%|          | 41/62006 [01:07<28:23:35,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9856:   0%|          | 41/62006 [01:09<28:23:35,  1.65s/it]
+epoch   1 loss 2.9856:   0%|          | 42/62006 [01:09<28:25:34,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9928:   0%|          | 42/62006 [01:11<28:25:34,  1.65s/it]
+epoch   1 loss 2.9928:   0%|          | 43/62006 [01:11<28:22:45,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 3.0000:   0%|          | 43/62006 [01:12<28:22:45,  1.65s/it]
+epoch   1 loss 3.0000:   0%|          | 44/62006 [01:12<28:21:01,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9963:   0%|          | 44/62006 [01:14<28:21:01,  1.65s/it]
+epoch   1 loss 2.9963:   0%|          | 45/62006 [01:14<28:20:37,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9559:   0%|          | 45/62006 [01:16<28:20:37,  1.65s/it]
+epoch   1 loss 2.9559:   0%|          | 46/62006 [01:16<28:19:55,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9438:   0%|          | 46/62006 [01:17<28:19:55,  1.65s/it]
+epoch   1 loss 2.9438:   0%|          | 47/62006 [01:17<28:20:00,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9423:   0%|          | 47/62006 [01:19<28:20:00,  1.65s/it]
+epoch   1 loss 2.9423:   0%|          | 48/62006 [01:19<28:20:13,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9343:   0%|          | 48/62006 [01:21<28:20:13,  1.65s/it]
+epoch   1 loss 2.9343:   0%|          | 49/62006 [01:21<28:21:14,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9356:   0%|          | 49/62006 [01:22<28:21:14,  1.65s/it]
+epoch   1 loss 2.9356:   0%|          | 50/62006 [01:22<28:20:57,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9452:   0%|          | 50/62006 [01:24<28:20:57,  1.65s/it]
+epoch   1 loss 2.9452:   0%|          | 51/62006 [01:24<28:21:11,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9508:   0%|          | 51/62006 [01:26<28:21:11,  1.65s/it]
+epoch   1 loss 2.9508:   0%|          | 52/62006 [01:26<28:21:07,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9454:   0%|          | 52/62006 [01:27<28:21:07,  1.65s/it]
+epoch   1 loss 2.9454:   0%|          | 53/62006 [01:27<28:22:15,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9141:   0%|          | 53/62006 [01:29<28:22:15,  1.65s/it]
+epoch   1 loss 2.9141:   0%|          | 54/62006 [01:29<28:23:31,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9140:   0%|          | 54/62006 [01:30<28:23:31,  1.65s/it]
+epoch   1 loss 2.9140:   0%|          | 55/62006 [01:30<28:22:39,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9376:   0%|          | 55/62006 [01:32<28:22:39,  1.65s/it]
+epoch   1 loss 2.9376:   0%|          | 56/62006 [01:32<28:24:27,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9400:   0%|          | 56/62006 [01:34<28:24:27,  1.65s/it]
+epoch   1 loss 2.9400:   0%|          | 57/62006 [01:34<28:24:30,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9356:   0%|          | 57/62006 [01:35<28:24:30,  1.65s/it]
+epoch   1 loss 2.9356:   0%|          | 58/62006 [01:35<28:24:12,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9537:   0%|          | 58/62006 [01:37<28:24:12,  1.65s/it]
+epoch   1 loss 2.9537:   0%|          | 59/62006 [01:37<28:25:04,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9411:   0%|          | 59/62006 [01:39<28:25:04,  1.65s/it]
+epoch   1 loss 2.9411:   0%|          | 60/62006 [01:39<28:24:54,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9408:   0%|          | 60/62006 [01:40<28:24:54,  1.65s/it]
+epoch   1 loss 2.9408:   0%|          | 61/62006 [01:40<28:26:29,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9276:   0%|          | 61/62006 [01:42<28:26:29,  1.65s/it]
+epoch   1 loss 2.9276:   0%|          | 62/62006 [01:42<28:26:13,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9417:   0%|          | 62/62006 [01:44<28:26:13,  1.65s/it]
+epoch   1 loss 2.9417:   0%|          | 63/62006 [01:44<28:25:51,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9331:   0%|          | 63/62006 [01:45<28:25:51,  1.65s/it]
+epoch   1 loss 2.9331:   0%|          | 64/62006 [01:45<28:26:23,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9493:   0%|          | 64/62006 [01:47<28:26:23,  1.65s/it]
+epoch   1 loss 2.9493:   0%|          | 65/62006 [01:47<28:27:07,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9369:   0%|          | 65/62006 [01:49<28:27:07,  1.65s/it]
+epoch   1 loss 2.9369:   0%|          | 66/62006 [01:49<28:28:51,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9242:   0%|          | 66/62006 [01:50<28:28:51,  1.66s/it]
+epoch   1 loss 2.9242:   0%|          | 67/62006 [01:50<28:29:25,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9280:   0%|          | 67/62006 [01:52<28:29:25,  1.66s/it]
+epoch   1 loss 2.9280:   0%|          | 68/62006 [01:52<28:27:31,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9199:   0%|          | 68/62006 [01:54<28:27:31,  1.65s/it]
+epoch   1 loss 2.9199:   0%|          | 69/62006 [01:54<28:28:32,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9191:   0%|          | 69/62006 [01:55<28:28:32,  1.66s/it]
+epoch   1 loss 2.9191:   0%|          | 70/62006 [01:55<28:28:58,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9011:   0%|          | 70/62006 [01:57<28:28:58,  1.66s/it]
+epoch   1 loss 2.9011:   0%|          | 71/62006 [01:57<28:26:33,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8838:   0%|          | 71/62006 [01:59<28:26:33,  1.65s/it]
+epoch   1 loss 2.8838:   0%|          | 72/62006 [01:59<28:26:26,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8837:   0%|          | 72/62006 [02:00<28:26:26,  1.65s/it]
+epoch   1 loss 2.8837:   0%|          | 73/62006 [02:00<28:26:09,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8835:   0%|          | 73/62006 [02:02<28:26:09,  1.65s/it]
+epoch   1 loss 2.8835:   0%|          | 74/62006 [02:02<28:26:49,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9103:   0%|          | 74/62006 [02:04<28:26:49,  1.65s/it]
+epoch   1 loss 2.9103:   0%|          | 75/62006 [02:04<28:25:10,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9099:   0%|          | 75/62006 [02:05<28:25:10,  1.65s/it]
+epoch   1 loss 2.9099:   0%|          | 76/62006 [02:05<28:25:18,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8997:   0%|          | 76/62006 [02:07<28:25:18,  1.65s/it]
+epoch   1 loss 2.8997:   0%|          | 77/62006 [02:07<28:25:52,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8885:   0%|          | 77/62006 [02:09<28:25:52,  1.65s/it]
+epoch   1 loss 2.8885:   0%|          | 78/62006 [02:09<28:28:03,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8790:   0%|          | 78/62006 [02:10<28:28:03,  1.65s/it]
+epoch   1 loss 2.8790:   0%|          | 79/62006 [02:10<28:27:45,  1.65s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8764:   0%|          | 79/62006 [02:12<28:27:45,  1.65s/it]
+epoch   1 loss 2.8764:   0%|          | 80/62006 [02:12<28:28:36,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8656:   0%|          | 80/62006 [02:13<28:28:36,  1.66s/it]
+epoch   1 loss 2.8656:   0%|          | 81/62006 [02:13<28:28:47,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8694:   0%|          | 81/62006 [02:15<28:28:47,  1.66s/it]
+epoch   1 loss 2.8694:   0%|          | 82/62006 [02:15<28:28:40,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8959:   0%|          | 82/62006 [02:17<28:28:40,  1.66s/it]
+epoch   1 loss 2.8959:   0%|          | 83/62006 [02:17<28:29:30,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8978:   0%|          | 83/62006 [02:18<28:29:30,  1.66s/it]
+epoch   1 loss 2.8978:   0%|          | 84/62006 [02:18<28:29:00,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8865:   0%|          | 84/62006 [02:20<28:29:00,  1.66s/it]
+epoch   1 loss 2.8865:   0%|          | 85/62006 [02:20<28:28:35,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8806:   0%|          | 85/62006 [02:22<28:28:35,  1.66s/it]
+epoch   1 loss 2.8806:   0%|          | 86/62006 [02:22<28:29:53,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8862:   0%|          | 86/62006 [02:23<28:29:53,  1.66s/it]
+epoch   1 loss 2.8862:   0%|          | 87/62006 [02:23<28:28:48,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8976:   0%|          | 87/62006 [02:25<28:28:48,  1.66s/it]
+epoch   1 loss 2.8976:   0%|          | 88/62006 [02:25<28:29:14,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8973:   0%|          | 88/62006 [02:27<28:29:14,  1.66s/it]
+epoch   1 loss 2.8973:   0%|          | 89/62006 [02:27<28:29:10,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8961:   0%|          | 89/62006 [02:28<28:29:10,  1.66s/it]
+epoch   1 loss 2.8961:   0%|          | 90/62006 [02:28<28:30:13,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9025:   0%|          | 90/62006 [02:30<28:30:13,  1.66s/it]
+epoch   1 loss 2.9025:   0%|          | 91/62006 [02:30<28:30:01,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9174:   0%|          | 91/62006 [02:32<28:30:01,  1.66s/it]
+epoch   1 loss 2.9174:   0%|          | 92/62006 [02:32<28:29:32,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9216:   0%|          | 92/62006 [02:33<28:29:32,  1.66s/it]
+epoch   1 loss 2.9216:   0%|          | 93/62006 [02:33<28:29:04,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.9156:   0%|          | 93/62006 [02:35<28:29:04,  1.66s/it]
+epoch   1 loss 2.9156:   0%|          | 94/62006 [02:35<28:31:03,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8979:   0%|          | 94/62006 [02:37<28:31:03,  1.66s/it]
+epoch   1 loss 2.8979:   0%|          | 95/62006 [02:37<28:31:06,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8913:   0%|          | 95/62006 [02:38<28:31:06,  1.66s/it]
+epoch   1 loss 2.8913:   0%|          | 96/62006 [02:38<28:32:18,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8898:   0%|          | 96/62006 [02:40<28:32:18,  1.66s/it]
+epoch   1 loss 2.8898:   0%|          | 97/62006 [02:40<28:31:37,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8889:   0%|          | 97/62006 [02:42<28:31:37,  1.66s/it]
+epoch   1 loss 2.8889:   0%|          | 98/62006 [02:42<28:32:43,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8939:   0%|          | 98/62006 [02:43<28:32:43,  1.66s/it]
+epoch   1 loss 2.8939:   0%|          | 99/62006 [02:43<28:34:08,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8863:   0%|          | 99/62006 [02:45<28:34:08,  1.66s/it]
+epoch   1 loss 2.8863:   0%|          | 100/62006 [02:45<28:32:07,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8868:   0%|          | 100/62006 [02:47<28:32:07,  1.66s/it]
+epoch   1 loss 2.8868:   0%|          | 101/62006 [02:47<28:32:46,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8785:   0%|          | 101/62006 [02:48<28:32:46,  1.66s/it]
+epoch   1 loss 2.8785:   0%|          | 102/62006 [02:48<28:32:32,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8787:   0%|          | 102/62006 [02:50<28:32:32,  1.66s/it]
+epoch   1 loss 2.8787:   0%|          | 103/62006 [02:50<28:32:36,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8893:   0%|          | 103/62006 [02:52<28:32:36,  1.66s/it]
+epoch   1 loss 2.8893:   0%|          | 104/62006 [02:52<28:34:02,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8964:   0%|          | 104/62006 [02:53<28:34:02,  1.66s/it]
+epoch   1 loss 2.8964:   0%|          | 105/62006 [02:53<28:33:36,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8941:   0%|          | 105/62006 [02:55<28:33:36,  1.66s/it]
+epoch   1 loss 2.8941:   0%|          | 106/62006 [02:55<28:32:56,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8876:   0%|          | 106/62006 [02:57<28:32:56,  1.66s/it]
+epoch   1 loss 2.8876:   0%|          | 107/62006 [02:57<28:32:48,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8712:   0%|          | 107/62006 [02:58<28:32:48,  1.66s/it]
+epoch   1 loss 2.8712:   0%|          | 108/62006 [02:58<28:32:31,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8864:   0%|          | 108/62006 [03:00<28:32:31,  1.66s/it]
+epoch   1 loss 2.8864:   0%|          | 109/62006 [03:00<28:33:42,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8819:   0%|          | 109/62006 [03:02<28:33:42,  1.66s/it]
+epoch   1 loss 2.8819:   0%|          | 110/62006 [03:02<28:34:30,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8634:   0%|          | 110/62006 [03:03<28:34:30,  1.66s/it]
+epoch   1 loss 2.8634:   0%|          | 111/62006 [03:03<28:34:08,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8728:   0%|          | 111/62006 [03:05<28:34:08,  1.66s/it]
+epoch   1 loss 2.8728:   0%|          | 112/62006 [03:05<28:33:08,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8634:   0%|          | 112/62006 [03:07<28:33:08,  1.66s/it]
+epoch   1 loss 2.8634:   0%|          | 113/62006 [03:07<28:33:27,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8531:   0%|          | 113/62006 [03:08<28:33:27,  1.66s/it]
+epoch   1 loss 2.8531:   0%|          | 114/62006 [03:08<28:33:50,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8611:   0%|          | 114/62006 [03:10<28:33:50,  1.66s/it]
+epoch   1 loss 2.8611:   0%|          | 115/62006 [03:10<28:32:32,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8517:   0%|          | 115/62006 [03:12<28:32:32,  1.66s/it]
+epoch   1 loss 2.8517:   0%|          | 116/62006 [03:12<28:32:43,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8509:   0%|          | 116/62006 [03:13<28:32:43,  1.66s/it]
+epoch   1 loss 2.8509:   0%|          | 117/62006 [03:13<28:32:04,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8487:   0%|          | 117/62006 [03:15<28:32:04,  1.66s/it]
+epoch   1 loss 2.8487:   0%|          | 118/62006 [03:15<28:31:45,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8428:   0%|          | 118/62006 [03:17<28:31:45,  1.66s/it]
+epoch   1 loss 2.8428:   0%|          | 119/62006 [03:17<28:32:05,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8430:   0%|          | 119/62006 [03:18<28:32:05,  1.66s/it]
+epoch   1 loss 2.8430:   0%|          | 120/62006 [03:18<28:30:34,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8498:   0%|          | 120/62006 [03:20<28:30:34,  1.66s/it]
+epoch   1 loss 2.8498:   0%|          | 121/62006 [03:20<28:32:29,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8531:   0%|          | 121/62006 [03:22<28:32:29,  1.66s/it]
+epoch   1 loss 2.8531:   0%|          | 122/62006 [03:22<28:32:30,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8376:   0%|          | 122/62006 [03:23<28:32:30,  1.66s/it]
+epoch   1 loss 2.8376:   0%|          | 123/62006 [03:23<28:33:48,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8546:   0%|          | 123/62006 [03:25<28:33:48,  1.66s/it]
+epoch   1 loss 2.8546:   0%|          | 124/62006 [03:25<28:33:23,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8500:   0%|          | 124/62006 [03:27<28:33:23,  1.66s/it]
+epoch   1 loss 2.8500:   0%|          | 125/62006 [03:27<28:33:39,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8593:   0%|          | 125/62006 [03:28<28:33:39,  1.66s/it]
+epoch   1 loss 2.8593:   0%|          | 126/62006 [03:28<28:32:59,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8506:   0%|          | 126/62006 [03:30<28:32:59,  1.66s/it]
+epoch   1 loss 2.8506:   0%|          | 127/62006 [03:30<28:31:02,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8467:   0%|          | 127/62006 [03:31<28:31:02,  1.66s/it]
+epoch   1 loss 2.8467:   0%|          | 128/62006 [03:31<28:32:11,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8426:   0%|          | 128/62006 [03:33<28:32:11,  1.66s/it]
+epoch   1 loss 2.8426:   0%|          | 129/62006 [03:33<28:32:20,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8447:   0%|          | 129/62006 [03:35<28:32:20,  1.66s/it]
+epoch   1 loss 2.8447:   0%|          | 130/62006 [03:35<28:33:10,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8387:   0%|          | 130/62006 [03:36<28:33:10,  1.66s/it]
+epoch   1 loss 2.8387:   0%|          | 131/62006 [03:36<28:32:20,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8345:   0%|          | 131/62006 [03:38<28:32:20,  1.66s/it]
+epoch   1 loss 2.8345:   0%|          | 132/62006 [03:38<28:32:19,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8468:   0%|          | 132/62006 [03:40<28:32:19,  1.66s/it]
+epoch   1 loss 2.8468:   0%|          | 133/62006 [03:40<28:31:25,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8425:   0%|          | 133/62006 [03:41<28:31:25,  1.66s/it]
+epoch   1 loss 2.8425:   0%|          | 134/62006 [03:41<28:31:41,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8452:   0%|          | 134/62006 [03:43<28:31:41,  1.66s/it]
+epoch   1 loss 2.8452:   0%|          | 135/62006 [03:43<28:32:09,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8433:   0%|          | 135/62006 [03:45<28:32:09,  1.66s/it]
+epoch   1 loss 2.8433:   0%|          | 136/62006 [03:45<28:32:15,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8518:   0%|          | 136/62006 [03:46<28:32:15,  1.66s/it]
+epoch   1 loss 2.8518:   0%|          | 137/62006 [03:46<28:32:30,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+query embeddings shape torch.Size([8, 768])
+candidate_context_embeddings shape torch.Size([8, 50, 768])
+score shape torch.Size([8, 50])
+
+epoch   1 loss 2.8460:   0%|          | 137/62006 [03:48<28:32:30,  1.66s/it]
+epoch   1 loss 2.8460:   0%|          | 138/62006 [03:48<28:32:48,  1.66s/it]a_input_ids torch.Size([8, 32])
+b_input_ids torch.Size([8, 50, 128])
+slurmstepd-n02: error: *** JOB 5418 ON n02 CANCELLED AT 2024-02-08T23:12:08 ***

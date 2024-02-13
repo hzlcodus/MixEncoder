@@ -1,0 +1,48 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=5, model_class='CMCModel', dataset_name='ubuntu', label_num=0, composition='pooler', context_num=1, pretrained_bert_path='bert-base-uncased', model_save_prefix='', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='1', restore=False, val_batch_size=2, train_batch_size=8, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=False, only_final=False, load_model=False, load_model_path=None, save_model_dict='./model/', last_model_dict='./last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+--------------------- model  created ---------------------
+[{'params': <generator object Module.parameters at 0x7f05517e1460>, 'lr': 1e-05}]
+******************************
+**************************************************
+******************** 1 ********************
+**************************************************
+Training epoch is 5
+**************************************************
+Train 5 epochs, Block num 20, Accumulate num 1, Total update 312500, Remain update 312500
+
+------------------------------initial validation------------------------------
+------- begin val 50000 data--------
+  0%|          | 0/25000 [00:00<?, ?it/s]  0%|          | 0/25000 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 131, in <module>
+    my_train_model.train(train_two_stage_flag=my_train_two_stage_flag,
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 227, in train
+    this_best_performance = self.do_val(val_datasets, previous_best_performance)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 448, in do_val
+    now_best_performance = self.match_val_test_body(this_datasets=val_datasets,
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 1203, in match_val_test_body
+    logits, q_ids, p_ids, actual_candidate_num = self.match_validate_model(dataloader)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 1380, in match_validate_model
+    logits = self.__match_val_step_for_bi(batch)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 2996, in __match_val_step_for_bi
+    logits = self.model(
+             ^^^^^^^^^^^
+  File "/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_model.py", line 438, in forward
+    dot_product = self.do_queries_match(input_ids=a_input_ids,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_model.py", line 394, in do_queries_match
+    score = self.extend_multi(query_embeddings, candidate_context_embeddings, train_flag)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_model.py", line 408, in extend_multi
+    input = torch.cat([xs, ys], dim=1)
+                           ^^
+UnboundLocalError: cannot access local variable 'ys' where it is not associated with a value

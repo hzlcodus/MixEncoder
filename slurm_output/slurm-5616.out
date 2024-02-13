@@ -1,0 +1,440 @@
+args: Namespace(seed=100, text_max_len=512, num_train_epochs=50, model_class='MatchDeformer', dataset_name='hard_msmarco', label_num=1, composition='pooler', context_num=1, pretrained_bert_path='prajjwal1/bert-small', model_save_prefix='', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=True, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=True, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='0', restore=False, val_batch_size=2, train_batch_size=4, gradient_accumulation_steps=1, step_max_query_num=-1, clean_graph=False, no_initial_test=True, only_final=False, load_model=False, load_model_path=None, save_model_dict='/data/cme/mix/model/', last_model_dict='/data/cme/mix/last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, teacher_loss=False, alpha=0.5, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+Some weights of BertForSequenceClassification were not initialized from the model checkpoint at prajjwal1/bert-small and are newly initialized: ['classifier.bias', 'classifier.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+--------------------- model  created ---------------------
+train_step_function is match_train_step_for_qa_input
+[{'params': <generator object Module.parameters at 0x7f4ee0b465e0>, 'lr': 1e-05}]
+******************************
+Loading hard_msmarco_train from disk...
+**************************************************
+******************** 1 ********************
+**************************************************
+Training epoch is 50
+**************************************************
+Train 50 epochs, Block num 20, Accumulate num 1, Total update 6200650, Remain update 6200650
+
+
+  0%|          | 0/124013 [00:00<?, ?it/s]/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/transformers/modeling_utils.py:905: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+a_input_ids: torch.Size([4, 13])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2930:   0%|          | 0/124013 [00:01<?, ?it/s]
+epoch   1 loss 5.2930:   0%|          | 1/124013 [00:01<34:58:57,  1.02s/it]a_input_ids: torch.Size([4, 8])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2495:   0%|          | 1/124013 [00:01<34:58:57,  1.02s/it]
+epoch   1 loss 5.2495:   0%|          | 2/124013 [00:01<24:31:28,  1.40it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2752:   0%|          | 2/124013 [00:02<24:31:28,  1.40it/s]
+epoch   1 loss 5.2752:   0%|          | 3/124013 [00:02<21:20:04,  1.61it/s]a_input_ids: torch.Size([4, 7])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2833:   0%|          | 3/124013 [00:02<21:20:04,  1.61it/s]
+epoch   1 loss 5.2833:   0%|          | 4/124013 [00:02<19:40:43,  1.75it/s]a_input_ids: torch.Size([4, 8])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2873:   0%|          | 4/124013 [00:03<19:40:43,  1.75it/s]
+epoch   1 loss 5.2873:   0%|          | 5/124013 [00:03<18:47:20,  1.83it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2531:   0%|          | 5/124013 [00:03<18:47:20,  1.83it/s]
+epoch   1 loss 5.2531:   0%|          | 6/124013 [00:03<18:19:58,  1.88it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2645:   0%|          | 6/124013 [00:04<18:19:58,  1.88it/s]
+epoch   1 loss 5.2645:   0%|          | 7/124013 [00:04<18:05:08,  1.90it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2813:   0%|          | 7/124013 [00:04<18:05:08,  1.90it/s]
+epoch   1 loss 5.2813:   0%|          | 8/124013 [00:04<17:54:00,  1.92it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2984:   0%|          | 8/124013 [00:05<17:54:00,  1.92it/s]
+epoch   1 loss 5.2984:   0%|          | 9/124013 [00:05<17:45:15,  1.94it/s]a_input_ids: torch.Size([4, 15])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.3022:   0%|          | 9/124013 [00:05<17:45:15,  1.94it/s]
+epoch   1 loss 5.3022:   0%|          | 10/124013 [00:05<17:52:31,  1.93it/s]a_input_ids: torch.Size([4, 13])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2910:   0%|          | 10/124013 [00:06<17:52:31,  1.93it/s]
+epoch   1 loss 5.2910:   0%|          | 11/124013 [00:06<17:50:33,  1.93it/s]a_input_ids: torch.Size([4, 14])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2918:   0%|          | 11/124013 [00:06<17:50:33,  1.93it/s]
+epoch   1 loss 5.2918:   0%|          | 12/124013 [00:06<17:51:12,  1.93it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2851:   0%|          | 12/124013 [00:07<17:51:12,  1.93it/s]
+epoch   1 loss 5.2851:   0%|          | 13/124013 [00:07<17:44:09,  1.94it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2888:   0%|          | 13/124013 [00:07<17:44:09,  1.94it/s]
+epoch   1 loss 5.2888:   0%|          | 14/124013 [00:07<17:36:38,  1.96it/s]a_input_ids: torch.Size([4, 16])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2784:   0%|          | 14/124013 [00:08<17:36:38,  1.96it/s]
+epoch   1 loss 5.2784:   0%|          | 15/124013 [00:08<17:43:48,  1.94it/s]a_input_ids: torch.Size([4, 12])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2706:   0%|          | 15/124013 [00:08<17:43:48,  1.94it/s]
+epoch   1 loss 5.2706:   0%|          | 16/124013 [00:08<17:42:00,  1.95it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2905:   0%|          | 16/124013 [00:09<17:42:00,  1.95it/s]
+epoch   1 loss 5.2905:   0%|          | 17/124013 [00:09<17:35:22,  1.96it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2967:   0%|          | 17/124013 [00:09<17:35:22,  1.96it/s]
+epoch   1 loss 5.2967:   0%|          | 18/124013 [00:09<17:34:06,  1.96it/s]a_input_ids: torch.Size([4, 12])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2943:   0%|          | 18/124013 [00:10<17:34:06,  1.96it/s]
+epoch   1 loss 5.2943:   0%|          | 19/124013 [00:10<17:34:36,  1.96it/s]a_input_ids: torch.Size([4, 14])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2920:   0%|          | 19/124013 [00:10<17:34:36,  1.96it/s]
+epoch   1 loss 5.2920:   0%|          | 20/124013 [00:10<17:38:25,  1.95it/s]a_input_ids: torch.Size([4, 8])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2907:   0%|          | 20/124013 [00:11<17:38:25,  1.95it/s]
+epoch   1 loss 5.2907:   0%|          | 21/124013 [00:11<17:28:41,  1.97it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2898:   0%|          | 21/124013 [00:11<17:28:41,  1.97it/s]
+epoch   1 loss 5.2898:   0%|          | 22/124013 [00:11<17:31:30,  1.97it/s]a_input_ids: torch.Size([4, 15])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2926:   0%|          | 22/124013 [00:12<17:31:30,  1.97it/s]
+epoch   1 loss 5.2926:   0%|          | 23/124013 [00:12<17:39:44,  1.95it/s]a_input_ids: torch.Size([4, 16])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2880:   0%|          | 23/124013 [00:12<17:39:44,  1.95it/s]
+epoch   1 loss 5.2880:   0%|          | 24/124013 [00:12<17:47:09,  1.94it/s]a_input_ids: torch.Size([4, 15])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2893:   0%|          | 24/124013 [00:13<17:47:09,  1.94it/s]
+epoch   1 loss 5.2893:   0%|          | 25/124013 [00:13<17:50:47,  1.93it/s]a_input_ids: torch.Size([4, 16])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2875:   0%|          | 25/124013 [00:13<17:50:47,  1.93it/s]
+epoch   1 loss 5.2875:   0%|          | 26/124013 [00:13<17:57:24,  1.92it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2852:   0%|          | 26/124013 [00:14<17:57:24,  1.92it/s]
+epoch   1 loss 5.2852:   0%|          | 27/124013 [00:14<17:49:58,  1.93it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2858:   0%|          | 27/124013 [00:14<17:49:58,  1.93it/s]
+epoch   1 loss 5.2858:   0%|          | 28/124013 [00:14<17:42:29,  1.94it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2872:   0%|          | 28/124013 [00:15<17:42:29,  1.94it/s]
+epoch   1 loss 5.2872:   0%|          | 29/124013 [00:15<17:38:26,  1.95it/s]a_input_ids: torch.Size([4, 12])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2841:   0%|          | 29/124013 [00:15<17:38:26,  1.95it/s]
+epoch   1 loss 5.2841:   0%|          | 30/124013 [00:15<17:38:37,  1.95it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2807:   0%|          | 30/124013 [00:16<17:38:37,  1.95it/s]
+epoch   1 loss 5.2807:   0%|          | 31/124013 [00:16<17:32:57,  1.96it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2803:   0%|          | 31/124013 [00:16<17:32:57,  1.96it/s]
+epoch   1 loss 5.2803:   0%|          | 32/124013 [00:16<17:38:02,  1.95it/s]a_input_ids: torch.Size([4, 12])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2889:   0%|          | 32/124013 [00:17<17:38:02,  1.95it/s]
+epoch   1 loss 5.2889:   0%|          | 33/124013 [00:17<17:40:33,  1.95it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2927:   0%|          | 33/124013 [00:17<17:40:33,  1.95it/s]
+epoch   1 loss 5.2927:   0%|          | 34/124013 [00:17<17:34:12,  1.96it/s]a_input_ids: torch.Size([4, 13])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2898:   0%|          | 34/124013 [00:18<17:34:12,  1.96it/s]
+epoch   1 loss 5.2898:   0%|          | 35/124013 [00:18<17:40:38,  1.95it/s]a_input_ids: torch.Size([4, 14])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2894:   0%|          | 35/124013 [00:18<17:40:38,  1.95it/s]
+epoch   1 loss 5.2894:   0%|          | 36/124013 [00:18<17:48:19,  1.93it/s]a_input_ids: torch.Size([4, 13])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2881:   0%|          | 36/124013 [00:19<17:48:19,  1.93it/s]
+epoch   1 loss 5.2881:   0%|          | 37/124013 [00:19<17:50:28,  1.93it/s]a_input_ids: torch.Size([4, 19])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2844:   0%|          | 37/124013 [00:19<17:50:28,  1.93it/s]
+epoch   1 loss 5.2844:   0%|          | 38/124013 [00:19<18:02:25,  1.91it/s]a_input_ids: torch.Size([4, 15])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2822:   0%|          | 38/124013 [00:20<18:02:25,  1.91it/s]
+epoch   1 loss 5.2822:   0%|          | 39/124013 [00:20<18:06:21,  1.90it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2845:   0%|          | 39/124013 [00:21<18:06:21,  1.90it/s]
+epoch   1 loss 5.2845:   0%|          | 40/124013 [00:21<17:56:24,  1.92it/s]a_input_ids: torch.Size([4, 13])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2848:   0%|          | 40/124013 [00:21<17:56:24,  1.92it/s]
+epoch   1 loss 5.2848:   0%|          | 41/124013 [00:21<17:57:29,  1.92it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2866:   0%|          | 41/124013 [00:22<17:57:29,  1.92it/s]
+epoch   1 loss 5.2866:   0%|          | 42/124013 [00:22<17:50:40,  1.93it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2878:   0%|          | 42/124013 [00:22<17:50:40,  1.93it/s]
+epoch   1 loss 5.2878:   0%|          | 43/124013 [00:22<17:41:46,  1.95it/s]a_input_ids: torch.Size([4, 15])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2845:   0%|          | 43/124013 [00:23<17:41:46,  1.95it/s]
+epoch   1 loss 5.2845:   0%|          | 44/124013 [00:23<17:47:53,  1.93it/s]a_input_ids: torch.Size([4, 12])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2827:   0%|          | 44/124013 [00:23<17:47:53,  1.93it/s]
+epoch   1 loss 5.2827:   0%|          | 45/124013 [00:23<17:46:39,  1.94it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2844:   0%|          | 45/124013 [00:24<17:46:39,  1.94it/s]
+epoch   1 loss 5.2844:   0%|          | 46/124013 [00:24<17:38:18,  1.95it/s]a_input_ids: torch.Size([4, 7])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2846:   0%|          | 46/124013 [00:24<17:38:18,  1.95it/s]
+epoch   1 loss 5.2846:   0%|          | 47/124013 [00:24<17:25:25,  1.98it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2827:   0%|          | 47/124013 [00:25<17:25:25,  1.98it/s]
+epoch   1 loss 5.2827:   0%|          | 48/124013 [00:25<17:25:00,  1.98it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2802:   0%|          | 48/124013 [00:25<17:25:00,  1.98it/s]
+epoch   1 loss 5.2802:   0%|          | 49/124013 [00:25<17:22:52,  1.98it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2803:   0%|          | 49/124013 [00:26<17:22:52,  1.98it/s]
+epoch   1 loss 5.2803:   0%|          | 50/124013 [00:26<17:20:56,  1.98it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2825:   0%|          | 50/124013 [00:26<17:20:56,  1.98it/s]
+epoch   1 loss 5.2825:   0%|          | 51/124013 [00:26<17:22:38,  1.98it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2828:   0%|          | 51/124013 [00:27<17:22:38,  1.98it/s]
+epoch   1 loss 5.2828:   0%|          | 52/124013 [00:27<17:21:13,  1.98it/s]a_input_ids: torch.Size([4, 12])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2833:   0%|          | 52/124013 [00:27<17:21:13,  1.98it/s]
+epoch   1 loss 5.2833:   0%|          | 53/124013 [00:27<17:25:35,  1.98it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2852:   0%|          | 53/124013 [00:28<17:25:35,  1.98it/s]
+epoch   1 loss 5.2852:   0%|          | 54/124013 [00:28<17:23:27,  1.98it/s]a_input_ids: torch.Size([4, 14])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2877:   0%|          | 54/124013 [00:28<17:23:27,  1.98it/s]
+epoch   1 loss 5.2877:   0%|          | 55/124013 [00:28<17:34:44,  1.96it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2880:   0%|          | 55/124013 [00:29<17:34:44,  1.96it/s]
+epoch   1 loss 5.2880:   0%|          | 56/124013 [00:29<17:29:11,  1.97it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2890:   0%|          | 56/124013 [00:29<17:29:11,  1.97it/s]
+epoch   1 loss 5.2890:   0%|          | 57/124013 [00:29<17:26:59,  1.97it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2896:   0%|          | 57/124013 [00:30<17:26:59,  1.97it/s]
+epoch   1 loss 5.2896:   0%|          | 58/124013 [00:30<17:29:44,  1.97it/s]a_input_ids: torch.Size([4, 15])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2887:   0%|          | 58/124013 [00:30<17:29:44,  1.97it/s]
+epoch   1 loss 5.2887:   0%|          | 59/124013 [00:30<17:40:21,  1.95it/s]a_input_ids: torch.Size([4, 16])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2878:   0%|          | 59/124013 [00:31<17:40:21,  1.95it/s]
+epoch   1 loss 5.2878:   0%|          | 60/124013 [00:31<17:50:38,  1.93it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2877:   0%|          | 60/124013 [00:31<17:50:38,  1.93it/s]
+epoch   1 loss 5.2877:   0%|          | 61/124013 [00:31<17:41:45,  1.95it/s]a_input_ids: torch.Size([4, 11])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2886:   0%|          | 61/124013 [00:32<17:41:45,  1.95it/s]
+epoch   1 loss 5.2886:   0%|          | 62/124013 [00:32<17:37:38,  1.95it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2861:   0%|          | 62/124013 [00:32<17:37:38,  1.95it/s]
+epoch   1 loss 5.2861:   0%|          | 63/124013 [00:32<17:31:53,  1.96it/s]a_input_ids: torch.Size([4, 13])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2886:   0%|          | 63/124013 [00:33<17:31:53,  1.96it/s]
+epoch   1 loss 5.2886:   0%|          | 64/124013 [00:33<17:34:07,  1.96it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2875:   0%|          | 64/124013 [00:33<17:34:07,  1.96it/s]
+epoch   1 loss 5.2875:   0%|          | 65/124013 [00:33<17:32:45,  1.96it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2881:   0%|          | 65/124013 [00:34<17:32:45,  1.96it/s]
+epoch   1 loss 5.2881:   0%|          | 66/124013 [00:34<17:33:18,  1.96it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2879:   0%|          | 66/124013 [00:34<17:33:18,  1.96it/s]
+epoch   1 loss 5.2879:   0%|          | 67/124013 [00:34<17:30:55,  1.97it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2885:   0%|          | 67/124013 [00:35<17:30:55,  1.97it/s]
+epoch   1 loss 5.2885:   0%|          | 68/124013 [00:35<17:31:01,  1.97it/s]a_input_ids: torch.Size([4, 9])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+
+epoch   1 loss 5.2883:   0%|          | 68/124013 [00:35<17:31:01,  1.97it/s]
+epoch   1 loss 5.2883:   0%|          | 69/124013 [00:35<17:30:48,  1.97it/s]a_input_ids: torch.Size([4, 10])
+b_input_ids: torch.Size([200, 128])
+logits: torch.Size([800, 1])
+reshaped logits: torch.Size([4, 200])
+slurmstepd-n01: error: *** JOB 5616 ON n01 CANCELLED AT 2024-02-11T11:11:13 ***

@@ -112,11 +112,13 @@ class DoubleInputLabelDataset(torch.torch.utils.data.Dataset):
 
 
 class MSMARCODataset(torch.torch.utils.data.Dataset):
-	def __init__(self, queries_ids, qid_2_tensors, qid_2_negs, qid_2_pos, pid_2_tensors):
+	def __init__(self, queries_ids, qid_2_tensors, qid_2_negs, qid_2_neg_scores, qid_2_pos, pid_2_tensors):
+		print("calling MSMARCODataset init")
 		self.queries_ids = queries_ids
 
 		self.qid_2_tensors = qid_2_tensors
 		self.qid_2_negs = qid_2_negs
+		self.qid_2_neg_scores = qid_2_neg_scores # jcy : TODO!!
 		self.qid_2_pos = qid_2_pos
 
 		self.pid_2_tensors = pid_2_tensors
@@ -132,13 +134,44 @@ class MSMARCODataset(torch.torch.utils.data.Dataset):
 		query_id = self.queries_ids[item]
 		a_input_ids, a_attention_mask, a_token_type_ids = self.get_tensor_by_id(self.qid_2_tensors, query_id)
 
-		pos_id = self.qid_2_pos[query_id].pop(0)  # Pop positive and add at end
-		b_input_ids, b_attention_mask, b_token_type_ids = self.get_tensor_by_id(self.pid_2_tensors, pos_id)
-		self.qid_2_pos[query_id].append(pos_id)
+		# pos_id = self.qid_2_pos[query_id].pop(0)  # Pop positive and add at end
+		# b_input_ids, b_attention_mask, b_token_type_ids = self.get_tensor_by_id(self.pid_2_tensors, pos_id)
+		# self.qid_2_pos[query_id].append(pos_id)
 
-		neg_id = self.qid_2_negs[query_id].pop(0)  # Pop negative and add at end
-		c_input_ids, c_attention_mask, c_token_type_ids = self.get_tensor_by_id(self.pid_2_tensors, neg_id)
-		self.qid_2_negs[query_id].append(neg_id)
+		# neg_id = self.qid_2_negs[query_id].pop(0)  # Pop negative and add at end
+		# c_input_ids, c_attention_mask, c_token_type_ids = self.get_tensor_by_id(self.pid_2_tensors, neg_id)
+		# self.qid_2_negs[query_id].append(neg_id)
+
+		# for every passage in pos_id and neg_id, get input_ids, attention_mask, token_type_ids, and concatenate them for dim 1
+		b_input_ids_list = []
+		b_attention_mask_list = []
+		b_token_type_ids_list = []
+		for pos_id in self.qid_2_pos[query_id]:
+			b_input_ids, b_attention_mask, b_token_type_ids = self.get_tensor_by_id(self.pid_2_tensors, pos_id)
+			b_input_ids_list.append(b_input_ids.unsqueeze(0))
+			b_attention_mask_list.append(b_attention_mask.unsqueeze(0))
+			b_token_type_ids_list.append(b_token_type_ids.unsqueeze(0))
+			break
+
+		for neg_id in self.qid_2_negs[query_id]:
+			b_input_ids, b_attention_mask, b_token_type_ids = self.get_tensor_by_id(self.pid_2_tensors, neg_id)
+			b_input_ids_list.append(b_input_ids.unsqueeze(0))
+			b_attention_mask_list.append(b_attention_mask.unsqueeze(0))
+			b_token_type_ids_list.append(b_token_type_ids.unsqueeze(0))
+
+		b_input_ids = torch.cat(b_input_ids_list, dim=0)
+		b_attention_mask = torch.cat(b_attention_mask_list, dim=0)
+		b_token_type_ids = torch.cat(b_token_type_ids_list, dim=0)
+
+		# print("a_input_ids shape", a_input_ids.shape)
+		# print("a_attention_mask shape", a_attention_mask.shape)
+		# print("a_token_type_ids shape", a_token_type_ids.shape)
+		# print("b_input_ids shape", b_input_ids.shape)
+		# print("b_attention_mask shape", b_attention_mask.shape)
+		# print("b_token_type_ids shape", b_token_type_ids.shape)
+		# print("idx", query_id)
+		# print("==="*20)
+
 
 		item_dic = {'a_input_ids': a_input_ids,
 					'a_attention_mask': a_attention_mask,
@@ -146,9 +179,6 @@ class MSMARCODataset(torch.torch.utils.data.Dataset):
 					'b_input_ids': b_input_ids,
 					'b_attention_mask': b_attention_mask,
 					'b_token_type_ids': b_token_type_ids,
-					'c_input_ids': c_input_ids,
-					'c_attention_mask': c_attention_mask,
-					'c_token_type_ids': c_token_type_ids,
 					'idx': query_id}
 
 		return item_dic

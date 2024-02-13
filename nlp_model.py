@@ -42,9 +42,10 @@ except:
 # fen ge xian
 # --------------------------------------
 # No matter whether use memory mechanism, all models whose input consists of Q and A can use this class
+# jcy: CMC도 이거 사용하자!
 class QAClassifierModelConfig:
     def __init__(self, tokenizer_len, pretrained_bert_path='prajjwal1/bert-small', num_labels=4,
-                 word_embedding_len=512, sentence_embedding_len=512, composition='pooler'):
+                 word_embedding_len=512, sentence_embedding_len=512, composition='pooler', teacher_loss = False, alpha = 0.5):
 
         self.tokenizer_len = tokenizer_len
         self.pretrained_bert_path = pretrained_bert_path
@@ -52,6 +53,8 @@ class QAClassifierModelConfig:
         self.word_embedding_len = word_embedding_len
         self.sentence_embedding_len = sentence_embedding_len
         self.composition = composition
+        self.teacher_loss = teacher_loss
+        self.alpha = alpha
 
     def __str__(self):
         print("*"*20 + "config" + "*"*20)
@@ -226,7 +229,7 @@ class QAMatchModel(nn.Module):
         self.num_labels = config.num_labels
         self.sentence_embedding_len = config.sentence_embedding_len
 
-        self.bert_model = BertModel.from_pretrained(config.pretrained_bert_path)
+        self.bert_model = BertModel.from_pretrained(config.pretrained_bert_path) # jcy : prajjwal1/bert-small에서 시작
         self.bert_model.resize_token_embeddings(config.tokenizer_len)
 
         # self.embeddings = self.bert_model.get_input_embeddings()
@@ -273,22 +276,27 @@ class QAMatchModel(nn.Module):
         return candidate_embeddings
 
     # use pre-compute candidate to get scores
-    def do_queries_match(self, input_ids, token_type_ids, attention_mask, candidate_context_embeddings, **kwargs):
+    def do_queries_match(self, input_ids, token_type_ids, attention_mask, candidate_context_embeddings, is_hard_msmarco, **kwargs):
         """ candidate_context_embeddings is (batch, candidate, dim) or (batch, dim) """
 
         train_flag = kwargs.get('train_flag', False)
 
         query_embeddings = self.prepare_candidates(input_ids=input_ids, token_type_ids=token_type_ids,
                                                    attention_mask=attention_mask)
-        if train_flag:
+
+        # print("query embeddings shape", query_embeddings.shape)
+        # print("candidate_context_embeddings shape", candidate_context_embeddings.shape)                                      
+        
+
+        if train_flag and not is_hard_msmarco:
             dot_product = torch.matmul(query_embeddings, candidate_context_embeddings.t())  # [bs, bs]
         else:
-            query_embeddings = query_embeddings.unsqueeze(1)
-            dot_product = torch.matmul(query_embeddings, candidate_context_embeddings.permute(0, 2, 1)).squeeze(1)
-        return dot_product
+            query_embeddings = query_embeddings.unsqueeze(1) # jcy : (batch, 1, dim)
+            dot_product = torch.matmul(query_embeddings, candidate_context_embeddings.permute(0, 2, 1)).squeeze(1) # jcy : (batch, candidate_num, dim) -> (batch, candidate_num)
+        return dot_product # jcy
 
     def forward(self, a_input_ids, a_token_type_ids, a_attention_mask,
-                b_input_ids, b_token_type_ids, b_attention_mask, train_flag, **kwargs):
+                b_input_ids, b_token_type_ids, b_attention_mask, train_flag, is_hard_msmarco=False, **kwargs):
         """
         Traditional training method. May be unsuitable for big model and big batch size due to cuda memory restriction;
         :param train_flag: None
@@ -305,24 +313,280 @@ class QAMatchModel(nn.Module):
         b_embeddings = self.prepare_candidates(input_ids=b_input_ids,
                                                attention_mask=b_attention_mask,
                                                token_type_ids=b_token_type_ids)
-        if not train_flag:
+                        
+        if not train_flag or is_hard_msmarco:
             # (query_num, candidate_num, dim)
             b_embeddings = b_embeddings.reshape(a_input_ids.shape[0], -1, b_embeddings.shape[-1])
+        
+        # print("a_input_ids", a_input_ids.shape)
+        # print("b_input_ids", b_input_ids.shape)
+        # print(is_hard_msmarco)
+
 
         dot_product = self.do_queries_match(input_ids=a_input_ids,
                                             token_type_ids=a_token_type_ids,
                                             attention_mask=a_attention_mask,
                                             candidate_context_embeddings=b_embeddings,
-                                            train_flag=train_flag)
-
+                                            train_flag=train_flag, is_hard_msmarco=is_hard_msmarco)
+        #print("dot_product shape", dot_product.shape)
         # for some purposes I don't compute logits in forward while training. Only this model behaves like this.
+        # jcy : gold is a diagonal matrix (torch.eye makes identity matrix)
         if train_flag:
-            mask = torch.eye(a_input_ids.size(0)).to(a_input_ids.device)
+            if is_hard_msmarco:
+                # for each query in batch, gold is the first candidate
+                batch_size, candidate_num_per_query = dot_product.size()
+
+                # Create a mask
+                # Initialize the mask with zeros
+                mask = torch.zeros(batch_size, candidate_num_per_query)
+
+                # Set the first element of each row in the mask to 1
+                mask[:, 0] = 1
+
+                # Ensure mask is on the same device as score
+                mask = mask.to(dot_product.device)
+            else:
+                mask = torch.eye(a_input_ids.size(0)).to(a_input_ids.device)
+
+            
             loss = F.log_softmax(dot_product, dim=-1) * mask
-            loss = (-loss.sum(dim=1)).mean()
+            loss = (-loss.sum(dim=1)).mean() # jcy : cross entropy loss로 추정
             return loss
         else:
             return dot_product
+
+# -----------
+# jcy
+# -----------
+class CMCModel(nn.Module):
+    def __init__(self, config):
+
+        super(CMCModel, self).__init__()
+
+        self.config = config
+
+        self.num_labels = config.num_labels
+        self.sentence_embedding_len = config.sentence_embedding_len
+
+        # jcy : untie query and candidate encoder
+        self.qry_bert_model = BertModel.from_pretrained(config.pretrained_bert_path)
+        self.qry_bert_model.resize_token_embeddings(config.tokenizer_len)
+
+        self.can_bert_model = BertModel.from_pretrained(config.pretrained_bert_path)
+        self.can_bert_model.resize_token_embeddings(config.tokenizer_len)
+
+        # jcy : teacher model
+        self.original_bert_model = BertModel.from_pretrained(config.pretrained_bert_path)
+        self.original_bert_model.resize_token_embeddings(config.tokenizer_len)
+        for param in self.original_bert_model.parameters():
+            param.requires_grad = False
+
+        self.num_heads = 2
+        self.num_layers = 2
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
+        self.extend_multi_transformerencoderlayer = IdentityInitializedTransformerEncoderLayer(self.sentence_embedding_len, self.num_heads).to(self.device) #TODO: AttributeError!
+        self.extend_multi_transformerencoder = torch.nn.TransformerEncoder(self.extend_multi_transformerencoderlayer, self.num_layers).to(self.device)
+
+
+
+    def get_rep_by_pooler(self, input_ids, token_type_ids, attention_mask, is_query, is_teacher):
+        # out = self.bert_model(input_ids=input_ids, attention_mask=attention_mask,
+        #                       token_type_ids=token_type_ids)
+        if is_teacher:
+            out = self.original_bert_model(input_ids=input_ids, attention_mask=attention_mask,
+                              token_type_ids=token_type_ids)
+        else:
+            if is_query:
+                out = self.qry_bert_model(input_ids=input_ids, attention_mask=attention_mask,
+                              token_type_ids=token_type_ids)
+            else:
+                out = self.can_bert_model(input_ids=input_ids, attention_mask=attention_mask,
+                              token_type_ids=token_type_ids)
+
+
+        out = out['last_hidden_state'][:, 0, :]
+
+        return out
+
+    # Pre-compute representations. Used for time measuring.
+    def prepare_candidates(self, input_ids, token_type_ids, attention_mask, is_query, is_teacher):
+        candidate_seq_len = input_ids.shape[-1]
+
+        input_ids = input_ids.reshape(-1, candidate_seq_len)
+        token_type_ids = token_type_ids.reshape(-1, candidate_seq_len)
+        attention_mask = attention_mask.reshape(-1, candidate_seq_len)
+
+        input_ids, attention_mask, token_type_ids = clean_input_ids(input_ids, attention_mask, token_type_ids)
+
+        candidate_embeddings = self.get_rep_by_pooler(input_ids=input_ids, token_type_ids=token_type_ids,
+                                                      attention_mask=attention_mask, is_query=is_query, is_teacher=is_teacher)
+        return candidate_embeddings
+
+    # use pre-compute candidate to get scores
+    def do_queries_match_student(self, input_ids, token_type_ids, attention_mask, candidate_context_embeddings, is_hard_msmarco, **kwargs):
+        """ candidate_context_embeddings is (batch, candidate, dim) or (batch, dim) """
+
+        train_flag = kwargs.get('train_flag', False)
+
+        query_embeddings = self.prepare_candidates(input_ids=input_ids, token_type_ids=token_type_ids,
+                                                   attention_mask=attention_mask, is_query=True, is_teacher=False)
+        # print("query embeddings shape", query_embeddings.shape)
+        # print("candidate_context_embeddings shape", candidate_context_embeddings.shape)
+
+        score = self.extend_multi(query_embeddings, candidate_context_embeddings, train_flag, is_hard_msmarco)
+        return score
+
+    def do_queries_match_teacher(self, input_ids, token_type_ids, attention_mask, candidate_context_embeddings, is_hard_msmarco, **kwargs):
+        """ candidate_context_embeddings is (batch, candidate, dim) or (batch, dim) """
+
+        train_flag = kwargs.get('train_flag', False)
+
+        query_embeddings = self.prepare_candidates(input_ids=input_ids, token_type_ids=token_type_ids,
+                                                   attention_mask=attention_mask, is_query=True, is_teacher=True)
+
+        if train_flag and not is_hard_msmarco:
+            dot_product = torch.matmul(query_embeddings, candidate_context_embeddings.t())  # [bs, bs]
+        else:
+            query_embeddings = query_embeddings.unsqueeze(1)
+            dot_product = torch.matmul(query_embeddings, candidate_context_embeddings.permute(0, 2, 1)).squeeze(1)
+        return dot_product # jcy
+    
+    def extend_multi(self, query_embeddings, candidate_context_embeddings, train_flag, is_hard_msmarco):
+        batch_size = query_embeddings.shape[0]
+        # query embedding shape is (batch, dim)
+        xs = query_embeddings.unsqueeze(1)
+
+        if train_flag and not is_hard_msmarco:
+            # make ys as tensor of size [batch, batch, dim]
+            ys = candidate_context_embeddings.unsqueeze(0).repeat(batch_size, 1, 1)
+        else:
+            ys = candidate_context_embeddings
+            # 이미 candidate_context_embeddings가 (batch, candidate_num, dim)로 reshape되어 있음
+
+        # print("xs.shape", xs.shape)
+        # print("ys.shape", ys.shape)
+
+        input = torch.cat([xs, ys], dim=1)
+        attention_result = self.extend_multi_transformerencoder(input)
+        # Get scores from attention_result
+        scores = torch.bmm(attention_result[:,0,:].unsqueeze(1), attention_result[:,1:,:].transpose(2,1))
+        scores = scores.squeeze(-2) # should be size [batch, batch] (train) or [batch, candidate_num] (val)
+        return scores
+        
+    # Distillation loss function 
+    def distillation_loss(self, student_outputs, teacher_outputs, temperature = 1):
+        ## Inputs
+        # student_outputs (torch.tensor): score distribution from the model trained
+        # teacher_outputs (torch.tensor): score distribution from the teacher model
+        # labels (torch.tensor): gold for given instance
+        # alpha (float): weight b/w two loss terms -> moved to forward function
+        # temperature (flost): softmac temperature
+        ## Outputs
+        # teacher_loss (torch.tensor): KL-divergence b/w student and teacher model's score distribution
+        # Teacher loss is obtained by KL divergence
+        if teacher_outputs is not None:
+            #teacher_outputs = teacher_outputs[:,:student_outputs.size(1)].to(device
+            teacher_loss = nn.KLDivLoss(reduction='batchmean')(nn.functional.log_softmax(student_outputs/temperature, dim=1),
+                                nn.functional.softmax(teacher_outputs/temperature, dim=1))
+        else: 
+            teacher_loss = torch.tensor([0.]).to(device)
+        return teacher_loss
+
+    def forward(self, a_input_ids, a_token_type_ids, a_attention_mask,
+                b_input_ids, b_token_type_ids, b_attention_mask, train_flag, is_hard_msmarco=False, **kwargs):
+        """
+        Traditional training method. May be unsuitable for big model and big batch size due to cuda memory restriction;
+        :param train_flag: None
+        :param a_input_ids: (batch size, sequence len)
+        :param a_token_type_ids: (batch size, sequence len)
+        :param a_attention_mask: (batch size, sequence len)
+        :param b_input_ids: training: (batch size, sequence len) / val: (batch size, candidate num, sequence len)
+        :param b_token_type_ids: training: (batch size, sequence len) / val: (batch size, candidate num, sequence len)
+        :param b_attention_mask: training: (batch size, sequence len) / val: (batch size, candidate num, sequence len)
+        :return: training: (batch size, batch size) / val: (batch size, candidate num)
+        """
+
+        # print("a_input_ids", a_input_ids.shape)
+        # print("b_input_ids", b_input_ids.shape)
+
+        # reshape and encode candidates
+        b_embeddings = self.prepare_candidates(input_ids=b_input_ids,
+                                               attention_mask=b_attention_mask,
+                                               token_type_ids=b_token_type_ids, is_query=False, is_teacher=False)
+        if not train_flag or is_hard_msmarco:
+            # (query_num, candidate_num, dim)
+            b_embeddings = b_embeddings.reshape(a_input_ids.shape[0], -1, b_embeddings.shape[-1])
+
+        score = self.do_queries_match_student(input_ids=a_input_ids,
+                                            token_type_ids=a_token_type_ids,
+                                            attention_mask=a_attention_mask,
+                                            candidate_context_embeddings=b_embeddings,
+                                            train_flag=train_flag, is_hard_msmarco=is_hard_msmarco)
+
+
+        # for some purposes I don't compute logits in forward while training. Only this model behaves like this.
+        if train_flag:
+            if is_hard_msmarco:
+                # for each query in batch, gold is the first candidate
+                batch_size, candidate_num_per_query = score.size()
+
+                # Create a mask
+                # Initialize the mask with zeros
+                mask = torch.zeros(batch_size, candidate_num_per_query)
+
+                # Set the first element of each row in the mask to 1
+                mask[:, 0] = 1
+
+                # Ensure mask is on the same device as score
+                mask = mask.to(score.device)
+            else:
+                mask = torch.eye(a_input_ids.size(0)).to(a_input_ids.device)
+
+            loss = F.log_softmax(score, dim=-1) * mask
+            loss = (-loss.sum(dim=1)).mean()
+
+            if self.config.teacher_loss:
+                b_embeddings_teacher = self.prepare_candidates(input_ids=b_input_ids,
+                                attention_mask=b_attention_mask,
+                                token_type_ids=b_token_type_ids, is_query=False, is_teacher=True) 
+                teacher_score = self.do_queries_match_teacher(input_ids=a_input_ids,
+                                                token_type_ids=a_token_type_ids,
+                                                attention_mask=a_attention_mask,
+                                                candidate_context_embeddings=b_embeddings_teacher,
+                                                train_flag=train_flag, is_hard_msmarco=is_hard_msmarco)
+                # print("type score", type(score))
+                # print("shape score", score.shape)
+                # print("type teacher_score", type(teacher_score))
+                # print("shape teacher_score", teacher_score.shape)
+
+                teacher_loss = self.distillation_loss(student_outputs = score, teacher_outputs = teacher_score)
+
+                alpha = self.config.alpha
+                loss = loss * alpha + teacher_loss * (1 - alpha)
+            return loss
+        else:
+            return score
+
+class IdentityInitializedTransformerEncoderLayer(torch.nn.Module):
+    def __init__(self, d_model, n_head, dim_feedforward=None, dropout=0.1, activation="relu", args = None):
+        super(IdentityInitializedTransformerEncoderLayer, self).__init__()
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )  
+        self.args = args
+        self.encoder_layer = torch.nn.TransformerEncoderLayer(d_model, n_head, batch_first = True)
+        self.weight = nn.Parameter(torch.tensor([-5.], requires_grad = True))
+            
+    def forward(self,src, src_mask=None, src_key_padding_mask=None, is_causal = False):
+        out1 = self.encoder_layer(src, src_mask, src_key_padding_mask) # For Lower Torch Version
+        # out1 = self.encoder_layer(src, src_mask, src_key_padding_mask, is_causal) # For Higher Torch Version
+        sigmoid_weight = torch.sigmoid(self.weight).to(self.device)
+        out = sigmoid_weight*out1 + (1-sigmoid_weight)*src
+        return out
+
+
 
 
 # --------------------------------------
@@ -952,13 +1216,16 @@ class MatchParallelEncoder(nn.Module):
             query_embeddings = decoder_output[:, -candidate_num:, :]
             # (query_num, candidate_num)
             dot_product = torch.mul(query_embeddings, candidate_embeddings).sum(-1)
+        # print("query_embeddings:", query_embeddings.shape)
+        # print("candidate_embeddings:", candidate_embeddings.shape)
+        # print("dot_product:", dot_product.shape)
 
         return dot_product
 
     # 如果不把a传进q，就会退化成最普通的QAModel，已经被验证过了
     # b_text can be pre-computed
     def forward(self, a_input_ids, a_token_type_ids, a_attention_mask,
-                b_input_ids, b_token_type_ids, b_attention_mask, train_flag, **kwargs):
+                b_input_ids, b_token_type_ids, b_attention_mask, train_flag, is_hard_msmarco=False, **kwargs):
         """
         Forward can be used to route the function call to other functions in this Class.
         if train_flag==True, a_input_ids.shape and b_input_ids.shape are 2 dims, like (batch size, seq_len),
@@ -974,7 +1241,7 @@ class MatchParallelEncoder(nn.Module):
                                          candidate_context_embeddings=kwargs.get('candidate_context_embeddings'),
                                          no_aggregator=kwargs.get('no_aggregator'),
                                          no_enricher=kwargs.get('no_enricher'),
-                                         train_flag=train_flag)
+                                         train_flag=train_flag, is_hard_msmarco=is_hard_msmarco)
 
         prepare_candidates = kwargs.get('prepare_candidates', False)
         if prepare_candidates:
@@ -992,13 +1259,17 @@ class MatchParallelEncoder(nn.Module):
         # (all_candidate_num, context_num, dim)
         b_embeddings = self.prepare_candidates(input_ids=b_input_ids, token_type_ids=b_token_type_ids, attention_mask=b_attention_mask)
 
+        # print("a_input_ids:", a_input_ids.shape)
+        # print("b_input_ids:", b_input_ids.shape)
+        # print("original b_embeddings:", b_embeddings.shape)
+
         # convert to (query_num, candidate_num, context_num, dim)
-        if not train_flag:
+        if not train_flag or is_hard_msmarco:
             b_embeddings = b_embeddings.reshape(a_input_ids.shape[0], -1, self.config.context_num, b_embeddings.shape[-1])
         else:
             # need broadcast
             b_embeddings = b_embeddings.reshape(-1, self.config.context_num, b_embeddings.shape[-1]).unsqueeze(0).\
-                expand(a_input_ids.shape[0], -1, -1, -1)
+                expand(a_input_ids.shape[0], -1, -1, -1) # jcy : expand is similar to repeat
 
         dot_product = self.do_queries_match(input_ids=a_input_ids, token_type_ids=a_token_type_ids,
                                             attention_mask=a_attention_mask, candidate_context_embeddings=b_embeddings,
@@ -1007,7 +1278,23 @@ class MatchParallelEncoder(nn.Module):
         if train_flag:
             if return_dot_product:
                 return dot_product
-            mask = torch.eye(a_input_ids.size(0)).to(a_input_ids.device)
+            if is_hard_msmarco:
+                # for each query in batch, gold is the first candidate
+                batch_size, candidate_num_per_query = dot_product.size()
+
+                # Create a mask
+                # Initialize the mask with zeros
+                mask = torch.zeros(batch_size, candidate_num_per_query)
+
+                # Set the first element of each row in the mask to 1
+                mask[:, 0] = 1
+
+                # Ensure mask is on the same device as score
+                mask = mask.to(dot_product.device)
+
+            else:
+                mask = torch.eye(a_input_ids.size(0)).to(a_input_ids.device)
+            print("mask:", mask.shape)
             loss = F.log_softmax(dot_product, dim=-1) * mask
             loss = (-loss.sum(dim=1)).mean()
             return loss
@@ -1196,6 +1483,9 @@ class PolyEncoder(nn.Module):
                                                 v=query_embeddings)
 
         dot_product = torch.sum(final_query_context_vec * candidate_context_embeddings, -1)
+        # print("query_embeddings:", query_embeddings.shape)
+        # print("candidate_context_embeddings:", candidate_context_embeddings.shape)
+        # print("dot_product:", dot_product.shape)
         return dot_product
 
     def do_queries_classify(self, input_ids, token_type_ids, attention_mask, candidate_context_embeddings, **kwargs):
@@ -1223,9 +1513,11 @@ class PolyEncoder(nn.Module):
 
     # b_text can be pre-computed
     def forward(self, a_input_ids, a_token_type_ids, a_attention_mask,
-                b_input_ids, b_token_type_ids, b_attention_mask, **kwargs):
+                b_input_ids, b_token_type_ids, b_attention_mask, is_hard_msmarco=False, **kwargs):
         # encoding candidate texts
         # (batch_size, 1, dim) ---- pooler
+        # print("a_input_ids:", a_input_ids.shape)
+        # print("b_input_ids:", b_input_ids.shape)
         candidate_context_vectors = self.prepare_candidates(input_ids=b_input_ids,
                                                             token_type_ids=b_token_type_ids,
                                                             attention_mask=b_attention_mask)
@@ -1241,7 +1533,7 @@ class PolyEncoder(nn.Module):
         else:
             batch_size = a_token_type_ids.shape[0]
             train_flag = kwargs['train_flag']
-            if not train_flag:
+            if not train_flag or is_hard_msmarco:
                 # (batch_size, candidate_num, dim)
                 candidate_context_vectors = candidate_context_vectors.reshape(batch_size, -1, candidate_context_vectors.shape[-1])
 
@@ -1252,7 +1544,24 @@ class PolyEncoder(nn.Module):
                                                 candidate_context_embeddings=candidate_context_vectors)
 
             if train_flag:
-                mask = torch.eye(batch_size).to(dot_product.device)
+                if is_hard_msmarco:
+                    # for each query in batch, gold is the first candidate
+                    batch_size, candidate_num_per_query = dot_product.size()
+
+                    # Create a mask
+                    # Initialize the mask with zeros
+                    mask = torch.zeros(batch_size, candidate_num_per_query)
+
+                    # Set the first element of each row in the mask to 1
+                    mask[:, 0] = 1
+
+                    # Ensure mask is on the same device as score
+                    mask = mask.to(dot_product.device)
+                else:
+                    mask = torch.eye(batch_size).to(dot_product.device)
+                
+                # print("mask:", mask.shape)
+                # print("mask:", mask)
                 loss = F.log_softmax(dot_product, dim=-1) * mask
                 loss = (-loss.sum(dim=1)).mean()
 
@@ -1550,13 +1859,13 @@ class MatchDeformer(nn.Module):
     # concatenate embeddings of two texts and encoding them using top layers
     # dims of a_embeddings, b_embeddings are both 3, (batch size, seq len, dim)
     # dims of a_attention_mask, b_attention_mask are both 2, (batch size, seq len)
-    def joint_encoding(self, a_embeddings, b_embeddings, a_attention_mask, b_attention_mask, train_flag):
+    def joint_encoding(self, a_embeddings, b_embeddings, a_attention_mask, b_attention_mask, train_flag, is_hard_msmarco=False):
         device = a_embeddings.device
 
         a_max_seq_len = a_attention_mask.shape[1]
         query_num = a_attention_mask.shape[0]
 
-        if train_flag:
+        if train_flag and not is_hard_msmarco:
             candidate_num = b_embeddings.shape[0]
         else:
             candidate_num = int(b_embeddings.shape[0] / a_embeddings.shape[0])
@@ -1571,7 +1880,7 @@ class MatchDeformer(nn.Module):
         a_attention_mask = a_attention_mask.repeat(1, candidate_num, 1).reshape(query_num*candidate_num, a_max_seq_len)
 
         # need repeat candidate
-        if train_flag:
+        if train_flag and not is_hard_msmarco:
             b_embeddings = b_embeddings.repeat(query_num, 1, 1)
             b_attention_mask = b_attention_mask.repeat(query_num, 1)
 
@@ -1593,7 +1902,7 @@ class MatchDeformer(nn.Module):
         return final_hidden_states
 
     def forward(self, a_input_ids, a_token_type_ids, a_attention_mask,
-                b_input_ids, b_token_type_ids, b_attention_mask, train_flag, **kwargs):
+                b_input_ids, b_token_type_ids, b_attention_mask, train_flag, is_hard_msmarco=False, **kwargs):
 
         a_input_ids, a_attention_mask, a_token_type_ids = clean_input_ids(a_input_ids, a_attention_mask,
                                                                           a_token_type_ids)
@@ -1619,23 +1928,43 @@ class MatchDeformer(nn.Module):
                                                             attention_mask=b_attention_mask,
                                                             token_type_ids=b_token_type_ids)
 
+        print("a_input_ids:", a_input_ids.shape)
+        print("b_input_ids:", b_input_ids.shape)
         # encoding together
         joint_embeddings = self.joint_encoding(a_embeddings=a_lower_encoded_embeddings,
                                                b_embeddings=b_lower_encoded_embeddings,
                                                a_attention_mask=a_attention_mask,
                                                b_attention_mask=b_attention_mask,
-                                               train_flag=train_flag)
+                                               train_flag=train_flag, is_hard_msmarco=is_hard_msmarco)
         pooler = self.pooler_layer(joint_embeddings)
         logits = self.classifier(pooler)
 
+        print("logits:", logits.shape)
+
         if train_flag:
-            logits = logits.reshape(a_input_ids.shape[0], a_input_ids.shape[0])
-            mask = torch.eye(logits.size(0)).to(logits.device)
+            logits = logits.reshape(a_input_ids.shape[0], -1)
+            print("reshaped logits:", logits.shape)
+            if is_hard_msmarco:
+                # for each query in batch, gold is the first candidate
+                batch_size, candidate_num_per_query = logits.size()
+
+                # Create a mask
+                # Initialize the mask with zeros
+                mask = torch.zeros(batch_size, candidate_num_per_query)
+
+                # Set the first element of each row in the mask to 1
+                mask[:, 0] = 1
+
+                # Ensure mask is on the same device as score
+                mask = mask.to(logits.device)
+            else:
+                mask = torch.eye(logits.size(0)).to(logits.device)
             loss = F.log_softmax(logits, dim=-1) * mask
             loss = (-loss.sum(dim=1)).mean()
             return loss
         else:
             logits = logits.reshape(a_input_ids.shape[0], -1)
+            print("reshaped logits:", logits.shape)
             return logits
 
 
@@ -1721,12 +2050,16 @@ class ColBERT(nn.Module):
                                                                           candidate_context_embeddings)
 
             dot_product = torch.matmul(query_in, new_candidate_context_embeddings.permute(0, 1, 3, 2)).max(3).values.sum(2)
+        # print("query_embeddings:", query_embeddings.shape)
+        # print("candidate_context_embeddings:", candidate_context_embeddings.shape)
+        # print("dot_product:", dot_product.shape)
         return dot_product
 
 
     def forward(self, a_input_ids, a_token_type_ids, a_attention_mask,
                 b_input_ids, b_token_type_ids, b_attention_mask, train_flag, **kwargs):
-
+        # print ("a_input_ids:", a_input_ids.shape)
+        # print ("b_input_ids:", b_input_ids.shape)
         # reshape and encode candidates
         b_embeddings = self.prepare_candidates(input_ids=b_input_ids,
                                                attention_mask=b_attention_mask,

@@ -1,0 +1,6 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=5, model_class='CMCModel', dataset_name='ubuntu', label_num=0, composition='pooler', context_num=1, pretrained_bert_path='bert-base-uncased', model_save_prefix='v1.2', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='1', restore=False, val_batch_size=2, train_batch_size=8, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=False, only_final=False, load_model=False, load_model_path=None, save_model_dict='./model/', last_model_dict='./last_model/', load_middle=False, distill=True, teacher_path='./model/teacher', mlm=False, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 120, in <module>
+    raise Exception("Distillation is not supported yes!")
+Exception: Distillation is not supported yes!

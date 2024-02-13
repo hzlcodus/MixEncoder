@@ -1,0 +1,19 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=1, model_class='QAMatchModel', dataset_name='hard_msmarco', label_num=0, composition='pooler', context_num=1, pretrained_bert_path='Luyu/co-condenser-marco-retriever', model_save_prefix='no_apex-', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='1', restore=False, val_batch_size=2, train_batch_size=8, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=False, only_final=False, load_model=False, load_model_path=None, save_model_dict='/data/cme/mix/model/', last_model_dict='/data/cme/mix/last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, teacher_loss=False, alpha=0.5, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+--------------------- model  created ---------------------
+train_step_function is match_train_step_for_qa_input
+[{'params': <generator object Module.parameters at 0x7f79e0452f80>, 'lr': 1e-05}]
+******************************
+Loading hard_msmarco_train from disk...
+**************************************************
+******************** 1 ********************
+**************************************************
+Training epoch is 1
+**************************************************
+Train 1 epochs, Block num 20, Accumulate num 1, Total update 62006, Remain update 62006
+
+------------------------------initial validation------------------------------
+------- begin val 6980 data--------
+  0%|          | 0/3490 [00:00<?, ?it/s]  0%|          | 1/3490 [00:04<4:30:21,  4.65s/it]  0%|          | 2/3490 [00:08<4:19:15,  4.46s/it]  0%|          | 3/3490 [00:13<4:16:13,  4.41s/it]  0%|          | 4/3490 [00:17<4:14:56,  4.39s/it]  0%|          | 5/3490 [00:22<4:14:24,  4.38s/it]  0%|          | 6/3490 [00:26<4:13:16,  4.36s/it]  0%|          | 7/3490 [00:30<4:12:31,  4.35s/it]  0%|          | 8/3490 [00:35<4:12:03,  4.34s/it]  0%|          | 9/3490 [00:39<4:11:59,  4.34s/it]  0%|          | 10/3490 [00:43<4:12:02,  4.35s/it]  0%|          | 11/3490 [00:48<4:12:04,  4.35s/it]  0%|          | 12/3490 [00:52<4:12:31,  4.36s/it]  0%|          | 13/3490 [00:56<4:12:51,  4.36s/it]  0%|          | 14/3490 [01:01<4:12:59,  4.37s/it]  0%|          | 15/3490 [01:05<4:12:54,  4.37s/it]  0%|          | 16/3490 [01:09<4:12:32,  4.36s/it]slurmstepd-n01: error: *** JOB 5618 ON n01 CANCELLED AT 2024-02-11T11:27:56 ***

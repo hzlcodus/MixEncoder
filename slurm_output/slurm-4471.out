@@ -1,0 +1,26 @@
+tee: logs/ubuntu/poly_16.log: No such file or directory
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=50, model_class='PolyEncoder', dataset_name='ubuntu', label_num=0, composition='pooler', context_num=16, pretrained_bert_path='prajjwal1/bert-small', model_save_prefix='', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='0', restore=False, val_batch_size=2, train_batch_size=48, gradient_accumulation_steps=1, step_max_query_num=-1, clean_graph=False, no_initial_test=False, only_final=False, load_model=False, load_model_path=None, save_model_dict='./model/', last_model_dict='./last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+first time use this tokenizer, downloading...
+Downloading config.json:   0%|          | 0.00/286 [00:00<?, ?B/s]Downloading config.json: 100%|██████████| 286/286 [00:00<00:00, 1.32MB/s]
+Downloading vocab.txt:   0%|          | 0.00/232k [00:00<?, ?B/s]Downloading vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 11.3MB/s]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+Downloading pytorch_model.bin:   0%|          | 0.00/116M [00:00<?, ?B/s]Downloading pytorch_model.bin:   9%|▉         | 10.5M/116M [00:00<00:03, 29.7MB/s]Downloading pytorch_model.bin:  18%|█▊        | 21.0M/116M [00:01<00:06, 14.3MB/s]Downloading pytorch_model.bin:  27%|██▋       | 31.5M/116M [00:02<00:07, 12.1MB/s]Downloading pytorch_model.bin:  36%|███▌      | 41.9M/116M [00:03<00:06, 11.8MB/s]Downloading pytorch_model.bin:  45%|████▌     | 52.4M/116M [00:04<00:05, 11.1MB/s]Downloading pytorch_model.bin:  54%|█████▍    | 62.9M/116M [00:05<00:04, 10.8MB/s]Downloading pytorch_model.bin:  63%|██████▎   | 73.4M/116M [00:06<00:04, 10.7MB/s]Downloading pytorch_model.bin:  72%|███████▏  | 83.9M/116M [00:07<00:03, 10.6MB/s]Downloading pytorch_model.bin:  81%|████████  | 94.4M/116M [00:08<00:02, 8.93MB/s]Downloading pytorch_model.bin:  90%|█████████ | 105M/116M [00:09<00:01, 9.36MB/s] Downloading pytorch_model.bin:  99%|█████████▉| 115M/116M [00:10<00:00, 9.69MB/s]Downloading pytorch_model.bin: 100%|██████████| 116M/116M [00:11<00:00, 10.5MB/s]
+/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
+  warnings.warn("Initializing zero-element tensors is a no-op")
+--------------------- model  created ---------------------
+[{'params': <generator object Module.parameters at 0x7fdb6c95eea0>, 'lr': 5e-05}, {'params': <generator object Module.parameters at 0x7fdb6c95ef80>, 'lr': 5e-05}, {'params': <generator object Module.parameters at 0x7fdb6c95f060>, 'lr': 5e-05}]
+******************************
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 130, in <module>
+    my_train_model.train(train_two_stage_flag=my_train_two_stage_flag,
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 162, in train
+    train_dataset, val_datasets, test_datasets = self.__get_datasets()
+                                                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 1961, in __get_datasets
+    string_train_dataset = datasets.load_from_disk(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/datasets/load.py", line 2244, in load_from_disk
+    raise FileNotFoundError(f"Directory {dataset_path} not found")
+FileNotFoundError: Directory ./dataset/string_bi_train_ubuntu not found

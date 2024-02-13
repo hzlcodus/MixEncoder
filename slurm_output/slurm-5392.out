@@ -1,0 +1,19 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=1, model_class='CMCModel', dataset_name='hard_msmarco', label_num=0, composition='pooler', context_num=1, pretrained_bert_path='Luyu/co-condenser-marco-retriever', model_save_prefix='no_reg_v1-', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='1', restore=False, val_batch_size=2, train_batch_size=8, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=True, only_final=False, load_model=False, load_model_path=None, save_model_dict='/data/cme/mix/model/', last_model_dict='/data/cme/mix/last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, teacher_loss=False, alpha=0.5, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+--------------------- model  created ---------------------
+train_step_function is match_train_step_for_qa_input
+[{'params': <generator object Module.parameters at 0x7f8cfa8e3a00>, 'lr': 1e-05}, {'params': <generator object Module.parameters at 0x7f8cfa8e3ae0>, 'lr': 1e-05}, {'params': <generator object Module.parameters at 0x7f8cfa8e3bc0>, 'lr': 1e-05}, {'params': <generator object Module.parameters at 0x7f8cfa8e3ca0>, 'lr': 1e-05}]
+******************************
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 135, in <module>
+    my_train_model.train(train_two_stage_flag=my_train_two_stage_flag,
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 163, in train
+    train_dataset, val_datasets, test_datasets = self.__get_datasets()
+                                                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 1590, in __get_datasets
+    raise_dataset_error()
+  File "/home/cme/MixEncoder/my_function.py", line 18, in raise_dataset_error
+    raise Exception("This dataset is not supported now!")
+Exception: This dataset is not supported now!

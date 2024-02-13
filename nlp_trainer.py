@@ -28,7 +28,7 @@ except:
     APEX_FLAG = False
 
 from nlp_model import QAClassifierModel, QAClassifierModelConfig, CrossBERT, CrossBERTConfig, ClassifyParallelEncoder, \
-    ParallelEncoderConfig, PolyEncoder, PolyEncoderConfig, QAMatchModel, MatchParallelEncoder, ClassifyDeformer, \
+    ParallelEncoderConfig, PolyEncoder, PolyEncoderConfig, QAMatchModel, CMCModel, MatchParallelEncoder, ClassifyDeformer, \
     DeformerConfig, MatchDeformer, MatchCrossBERT, ColBERT, ColBERTConfig
 from my_function import sum_average_tuple, raise_dataset_error, print_recall_precise, print_optimizer, \
     raise_test_error, tokenize_and_truncate_from_head, get_elapse_time, calculate_recall, calculate_mrr, load_qrels
@@ -37,6 +37,7 @@ from nlp_dataset import SingleInputDataset, DoubleInputDataset, DoubleInputLabel
 from novel_model import CLSMatchParallelEncoder, CLSClassifyParallelEncoder, DisenMatchParallelEncoder, \
     DisenCLSMatchParallelEncoder, DisenCLSClassifyParallelEncoder, DisenClassifyParallelEncoder
 
+root_path = "/data/cme/fast_match/"
 
 class TrainWholeModel:
     def __init__(self, args, config=None):
@@ -51,7 +52,7 @@ class TrainWholeModel:
         # 设置gpu-------------------------------------------------------------------
         # os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
         # os.environ["TOKENIZERS_PARALLELISM"] = "false"
-        os.environ["CUDA_VISIBLE_DEVICES"] = args.nvidia_number
+        #os.environ["CUDA_VISIBLE_DEVICES"] = args.nvidia_number
 
         # for data_parallel-------------------------------------------------------------------
         nvidia_number = len(args.nvidia_number.split(","))
@@ -59,8 +60,8 @@ class TrainWholeModel:
 
         # self.device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
-        if not torch.cuda.is_available():
-            raise Exception("No cuda available!")
+        # if not torch.cuda.is_available():
+        #     raise Exception("No cuda available!")
 
         local_rank = 0
         if self.data_distribute:
@@ -284,7 +285,7 @@ class TrainWholeModel:
                 if not final_stage_flag:
                     postfix = "_middle"
 
-                # 先保存模型，免得评测代码出错
+                # 先保存模型，免得评测代码出错 
                 self.save_model(model_save_path=last_model_save_path + postfix, epoch=epoch, optimizer=optimizer,
                                 scheduler=scheduler,
                                 previous_best_performance=previous_best_performance, early_stop_count=early_stop_count)
@@ -315,7 +316,7 @@ class TrainWholeModel:
 
                         if early_stop_count == early_stop_threshold:
                             print("early stop!")
-                            break
+                            #break #jcy : disable early stop
 
                 torch.cuda.empty_cache()
                 gc.collect()
@@ -353,7 +354,7 @@ class TrainWholeModel:
                 train_step_function = self.__match_train_step_for_cross
             else:
                 raise_dataset_error()
-        elif self.model_class in ['QAClassifierModel', 'ClassifyParallelEncoder', 'PolyEncoder', 'QAMatchModel',
+        elif self.model_class in ['QAClassifierModel', 'ClassifyParallelEncoder', 'PolyEncoder', 'QAMatchModel', 'CMCModel',
                                   'MatchParallelEncoder', 'ClassifyDeformer', 'MatchDeformer', 'MatchCrossBERT',
                                   'CLSMatchParallelEncoder', 'CLSClassifyParallelEncoder', 'DisenMatchParallelEncoder',
                                   'DisenCLSMatchParallelEncoder', 'DisenCLSClassifyParallelEncoder',
@@ -361,29 +362,40 @@ class TrainWholeModel:
             if self.dataset_name in ['mnli', 'qqp', 'boolq']:
                 train_step_function = self.__classify_train_step_for_qa_input
             elif self.dataset_name in ['hard_msmarco']:
-                train_step_function = self.__clean_graph_efficient_match_train_step_for_bi_hard_msmarco
+                train_step_function = self.__match_train_step_for_qa_input # jcy : CMCMODEL, 그리고 다른 모델에도 통용 가능하도록
+                print("train_step_function is match_train_step_for_qa_input")
+                # train_step_function = self.__clean_graph_efficient_match_train_step_for_bi_hard_msmarco #MSMARCOdataset에서 a, b, c 인풋 들어왔을 때. forward도 안 부름
+                # print("train_step_function is clean_graph_efficient_match_train_step_for_bi_hard_msmarcorain_step_for_qa_input")
             elif (self.dataset_name in ['yahooqa', 'msmarco']) and (not self.in_batch):
                 train_step_function = self.__train_step_for_multi_candidates_input
             elif self.dataset_name in ['dstc7', 'ubuntu', 'msmarco']:
                 # support advance training function
-                if self.model_class in ['MatchParallelEncoder', 'QAMatchModel', 'PolyEncoder', 'MatchDeformer',
+                if self.model_class in ['MatchParallelEncoder', 'PolyEncoder', 'MatchDeformer', 'QAMatchModel', 
                                         'CLSMatchParallelEncoder', 'DisenMatchParallelEncoder',
                                         'DisenCLSMatchParallelEncoder', 'ColBERT']:
                     if self.data_parallel and self.model_class in ['MatchParallelEncoder', 'CLSMatchParallelEncoder',
                                                                    'DisenMatchParallelEncoder', 'DisenCLSMatchParallelEncoder']:
                         train_step_function = self.__data_parallel_match_train_step_for_qa_input
+                        print("train_step_function is data_parallel_match_train_step_for_qa_input")
                     elif self.clean_graph:
                         train_step_function = self.__clean_graph_efficient_match_train_step_for_qa_input
+                        print("train_step_function is clean_graph_efficient_match_train_step_for_qa_input")
                     else:
-                        train_step_function = self.__efficient_match_train_step_for_qa_input
+                        #train_step_function = self.__efficient_match_train_step_for_qa_input
+                        #print("train_step_function is efficient_match_train_step_for_qa_input")
+                        train_step_function = self.__match_train_step_for_qa_input # CMCMODEL
+                        print("train_step_function is match_train_step_for_qa_input")
+
                 # common training
                 else:
-                    train_step_function = self.__match_train_step_for_qa_input
+                    train_step_function = self.__match_train_step_for_qa_input # CMCMODEL
+                    print("train_step_function is match_train_step_for_qa_input")
             else:
                 raise_dataset_error()
         else:
             raise Exception("Train step have not supported this model class")
 
+       
         return train_step_function
 
     def get_scheduler(self, optimizer, scheduler_last_epoch, train_dataloader):
@@ -520,8 +532,8 @@ class TrainWholeModel:
         print("*" * 40 + " Begin Real Testing " + "*" * 40)
 
         # prepare data
-        if os.path.exists("./dataset/" + self.dataset_name + "_real"):
-            dataset = torch.load("./dataset/" + self.dataset_name + "_real")
+        if os.path.exists(root_path + "dataset/" + self.dataset_name + "_real"):
+            dataset = torch.load(root_path + "dataset/" + self.dataset_name + "_real")
 
             candidate_input_ids = dataset['candidate_input_ids']
             candidate_attention_mask = dataset['candidate_attention_mask']
@@ -573,7 +585,7 @@ class TrainWholeModel:
                 {"candidate_input_ids": candidate_input_ids, "candidate_attention_mask": candidate_attention_mask,
                  "candidate_token_type_ids": candidate_token_type_ids,
                  "query_input_ids": query_input_ids, "query_attention_mask": query_attention_mask,
-                 "query_token_type_ids": query_token_type_ids}, "./dataset/" + self.dataset_name + "_real")
+                 "query_token_type_ids": query_token_type_ids}, root_path + "dataset/" + self.dataset_name + "_real")
 
         query_num = candidate_input_ids.shape[0]
         candidate_num = candidate_input_ids.shape[1]
@@ -636,7 +648,7 @@ class TrainWholeModel:
                                             'DisenCLSMatchParallelEncoder', 'ColBERT']:
                         batch_embeddings = batch_embeddings.reshape(this_batch_size, candidate_num,
                                                                     *batch_embeddings.shape[-2:]).to("cpu")
-                    elif self.model_class in ['PolyEncoder', 'QAMatchModel']:
+                    elif self.model_class in ['PolyEncoder', 'QAMatchModel', 'CMCModel']:
                         batch_embeddings = batch_embeddings.reshape(this_batch_size, candidate_num,
                                                                     batch_embeddings.shape[-1]).to("cpu")
                     else:
@@ -737,8 +749,8 @@ class TrainWholeModel:
         print("*" * 40 + " Begin Real Testing " + "*" * 40)
 
         # prepare data
-        if os.path.exists("./dataset/" + self.dataset_name + "_real"):
-            dataset = torch.load("./dataset/" + self.dataset_name + "_real")
+        if os.path.exists(root_path + "dataset/" + self.dataset_name + "_real"):
+            dataset = torch.load(root_path + "dataset/" + self.dataset_name + "_real")
 
             candidate_input_ids = dataset['candidate_input_ids']
             candidate_attention_mask = dataset['candidate_attention_mask']
@@ -790,7 +802,7 @@ class TrainWholeModel:
                 {"candidate_input_ids": candidate_input_ids, "candidate_attention_mask": candidate_attention_mask,
                  "candidate_token_type_ids": candidate_token_type_ids,
                  "query_input_ids": query_input_ids, "query_attention_mask": query_attention_mask,
-                 "query_token_type_ids": query_token_type_ids}, "./dataset/" + self.dataset_name + "_real")
+                 "query_token_type_ids": query_token_type_ids}, root_path + "dataset/" + self.dataset_name + "_real")
 
         query_num = candidate_input_ids.shape[0]
         candidate_num = candidate_input_ids.shape[1]
@@ -1184,7 +1196,10 @@ class TrainWholeModel:
             if APEX_FLAG and not self.no_apex:
                 self.model = amp.initialize(self.model, opt_level="O1")
 
-            self.model = self.load_model(self.model, model_save_path)
+            if self.load_model_flag: # jcy
+                self.model = self.load_model(self.model, self.load_model_path)
+            else:    
+                self.model = self.load_model(self.model, model_save_path)
 
         self.model.eval()
 
@@ -1204,7 +1219,7 @@ class TrainWholeModel:
 
             # read labels for marco topk
             if self.dataset_name in ["msmarco", "hard_msmarco"]:
-                qrels = load_qrels("./dataset/qrels.dev.tsv")
+                qrels = load_qrels(root_path + "dataset/qrels.dev.tsv")
 
                 ranking_label = []
                 for index, qid in enumerate(q_ids):
@@ -1225,7 +1240,7 @@ class TrainWholeModel:
             # calculate loss
             if not(self.dataset_name in ["msmarco", "hard_msmarco"]):
                 my_label = torch.tensor([self.val_candidate_num-1]*logits.shape[0], dtype=torch.long, device=logits.device)
-                this_loss = cross_entropy_function(logits, my_label)
+                this_loss = cross_entropy_function(logits, my_label) # jcy 
             else:
                 this_loss = 0.0
 
@@ -1373,7 +1388,7 @@ class TrainWholeModel:
 
                 # 读取数据
                 # add model
-                if self.model_class in ['QAMatchModel', 'MatchParallelEncoder', 'PolyEncoder', 'MatchDeformer',
+                if self.model_class in ['QAMatchModel', 'CMCModel', 'MatchParallelEncoder', 'PolyEncoder', 'MatchDeformer',
                                         'MatchCrossBERT', 'CLSMatchParallelEncoder', 'DisenMatchParallelEncoder',
                                         'DisenCLSMatchParallelEncoder', 'ColBERT']:
                     logits = self.__match_val_step_for_bi(batch)
@@ -1555,7 +1570,7 @@ class TrainWholeModel:
 
         # add model
         # Checking whether input is pair or single is important
-        if self.model_class in ['QAClassifierModel', 'ClassifyParallelEncoder', 'PolyEncoder', 'QAMatchModel',
+        if self.model_class in ['QAClassifierModel', 'ClassifyParallelEncoder', 'PolyEncoder', 'QAMatchModel', 'CMCModel',
                                 'MatchParallelEncoder', 'ClassifyDeformer', 'MatchDeformer', 'MatchCrossBERT',
                                 'CLSMatchParallelEncoder', 'CLSClassifyParallelEncoder', 'DisenMatchParallelEncoder',
                                 'DisenCLSMatchParallelEncoder', 'DisenCLSClassifyParallelEncoder',
@@ -1567,6 +1582,10 @@ class TrainWholeModel:
             pair_flag = False
             save_load_prefix = "cross_"
             save_load_suffix = "_" + str(self.train_candidate_num)
+        # elif self.model_class == 'CMCModel':
+        #     pair_flag = True
+        #     save_load_prefix = "cmc_"
+        #     save_load_suffix = ""
         else:
             raise_dataset_error()
 
@@ -1586,15 +1605,15 @@ class TrainWholeModel:
                 temp_dataset_process_function = self.__tokenize_classify_cross_data_then_save
 
             # have been processed and saved to disk
-            if os.path.exists("./dataset/" + save_load_prefix + "glue_mnli_train"):
+            if os.path.exists(root_path + "dataset/" + save_load_prefix + "glue_mnli_train"):
                 train_datasets = (
-                torch.load("./dataset/" + save_load_prefix + "glue_mnli_train")['dataset'],)
+                torch.load(root_path + "dataset/" + save_load_prefix + "glue_mnli_train")['dataset'],)
 
-                val_datasets = (torch.load("./dataset/" + save_load_prefix + "glue_mnli_val_matched")['dataset'],
-                                torch.load("./dataset/" + save_load_prefix + "glue_mnli_val_mismatched")['dataset'],)
+                val_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + "glue_mnli_val_matched")['dataset'],
+                                torch.load(root_path + "dataset/" + save_load_prefix + "glue_mnli_val_mismatched")['dataset'],)
 
-                test_datasets = (torch.load("./dataset/" + save_load_prefix + "glue_mnli_test_matched")['dataset'],
-                                torch.load("./dataset/" + save_load_prefix + "glue_mnli_test_mismatched")['dataset'],)
+                test_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + "glue_mnli_test_matched")['dataset'],
+                                torch.load(root_path + "dataset/" + save_load_prefix + "glue_mnli_test_mismatched")['dataset'],)
             else:
                 # load data from huggingface(online)
                 complete_dataset = datasets.load_dataset("glue", 'mnli')
@@ -1643,13 +1662,13 @@ class TrainWholeModel:
                 temp_dataset_process_function = self.__tokenize_classify_cross_data_then_save
 
             # have been processed and saved to disk
-            if os.path.exists("./dataset/" + save_load_prefix + "glue_qqp_train"):
+            if os.path.exists(root_path + "dataset/" + save_load_prefix + "glue_qqp_train"):
                 train_datasets = (
-                torch.load("./dataset/" + save_load_prefix + "glue_qqp_train")['dataset'],)
+                torch.load(root_path + "dataset/" + save_load_prefix + "glue_qqp_train")['dataset'],)
 
-                val_datasets = (torch.load("./dataset/" + save_load_prefix + "glue_qqp_val")['dataset'],)
+                val_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + "glue_qqp_val")['dataset'],)
 
-                test_datasets = (torch.load("./dataset/" + save_load_prefix + "glue_qqp_test")['dataset'],)
+                test_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + "glue_qqp_test")['dataset'],)
             else:
                 # load data from huggingface(online)
                 complete_dataset = datasets.load_dataset("glue", 'qqp')
@@ -1685,13 +1704,13 @@ class TrainWholeModel:
                 temp_dataset_process_function = self.__tokenize_classify_cross_data_then_save
 
             # have been processed and saved to disk
-            if os.path.exists("./dataset/" + save_load_prefix + "glue_boolq_train"):
+            if os.path.exists(root_path + "dataset/" + save_load_prefix + "glue_boolq_train"):
                 train_datasets = (
-                    torch.load("./dataset/" + save_load_prefix + "glue_boolq_train")['dataset'],)
+                    torch.load(root_path + "dataset/" + save_load_prefix + "glue_boolq_train")['dataset'],)
 
-                val_datasets = (torch.load("./dataset/" + save_load_prefix + "glue_boolq_val")['dataset'],)
+                val_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + "glue_boolq_val")['dataset'],)
 
-                test_datasets = (torch.load("./dataset/" + save_load_prefix + "glue_boolq_test")['dataset'],)
+                test_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + "glue_boolq_test")['dataset'],)
             else:
                 # load data from huggingface(online)
                 complete_dataset = datasets.load_dataset("super_glue", 'boolq')
@@ -1728,14 +1747,14 @@ class TrainWholeModel:
             # read training data. exist? read!--------------------------------------------------
             if not get_train:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_train" + save_load_suffix):
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_train" + save_load_suffix):
                 train_datasets = (
-                torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_train" + save_load_suffix)[
+                torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_train" + save_load_suffix)[
                     'dataset'],)
             else:
                 if pair_flag:
                     string_train_dataset = datasets.load_from_disk(
-                        "./dataset/string_train_" + self.dataset_name)
+                        root_path + "dataset/string_train_" + self.dataset_name)
 
                     train_datasets = (self.__tokenize_match_multi_candidate_data_then_save(data=string_train_dataset,
                                                                                            save_name=save_load_prefix + self.dataset_name + "_train",
@@ -1744,7 +1763,7 @@ class TrainWholeModel:
                                                                                            candidate_num=5),)
                 else:
                     string_train_dataset = datasets.load_from_disk(
-                        "./dataset/string_train_" + self.dataset_name)
+                        root_path + "dataset/string_train_" + self.dataset_name)
 
                     train_datasets = (self.__tokenize_match_cross_data_then_save(data=string_train_dataset,
                                                                                  save_name=save_load_prefix + self.dataset_name + "_train",
@@ -1761,10 +1780,10 @@ class TrainWholeModel:
 
             if not get_val:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_val"):
-                val_datasets = (torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_val")['dataset'],)
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_val"):
+                val_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_val")['dataset'],)
             else:
-                string_val_dataset = datasets.load_from_disk("./dataset/string_val_" + self.dataset_name)
+                string_val_dataset = datasets.load_from_disk(root_path + "dataset/string_val_" + self.dataset_name)
 
                 val_datasets = (process_val_test_func(data=string_val_dataset,
                                                       save_name=save_load_prefix + self.dataset_name + "_val",
@@ -1775,10 +1794,10 @@ class TrainWholeModel:
             # read test data. exist? read!--------------------------------------------------
             if not get_test:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_test"):
-                test_datasets = (torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_test")['dataset'],)
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_test"):
+                test_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_test")['dataset'],)
             else:
-                string_test_dataset = datasets.load_from_disk("./dataset/string_test_" + self.dataset_name)
+                string_test_dataset = datasets.load_from_disk(root_path + "dataset/string_test_" + self.dataset_name)
 
                 test_datasets = (process_val_test_func(data=string_test_dataset,
                                                        save_name=save_load_prefix + self.dataset_name + "_test",
@@ -1799,16 +1818,16 @@ class TrainWholeModel:
             # read training data. exist? read!--------------------------------------------------
             if not get_train:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_train" + in_batch_suffix):
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_train" + in_batch_suffix):
                 train_datasets = (
-                torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_train" + in_batch_suffix)[
+                torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_train" + in_batch_suffix)[
                     'dataset'],)
             else:
                 if pair_flag:
-                    tokenized_query = torch.load("./dataset/msmarco_query_tokenized_dict")
-                    tokenized_positive = torch.load("./dataset/msmarco_positive_tokenized_dict")
+                    tokenized_query = torch.load(root_path + "dataset/msmarco_query_tokenized_dict")
+                    tokenized_positive = torch.load(root_path + "dataset/msmarco_positive_tokenized_dict")
 
-                    if self.in_batch:
+                    if self.in_batch: # jcy : I think it is false 
                         dataset = DoubleInputDataset(a_input_ids=tokenized_query['input_ids'],
                                                      a_attention_mask=tokenized_query['attention_mask'],
                                                      a_token_type_ids=tokenized_query['token_type_ids'],
@@ -1817,18 +1836,18 @@ class TrainWholeModel:
                                                      b_attention_mask=tokenized_positive['attention_mask'],
                                                      idx=torch.tensor(list(range(tokenized_query['input_ids'].shape[0]))))
                     else:
-                        tokenized_negative = torch.load("./dataset/msmarco_negative_tokenized_dict")
+                        tokenized_negative = torch.load(root_path + "dataset/msmarco_negative_tokenized_dict")
 
                         # concatenate candidates, put positive at last
-                        positive_input_ids = tokenized_positive['input_ids'].unsqueeze(1)
+                        positive_input_ids = tokenized_positive['input_ids'].unsqueeze(1) # (8, 1, 512)
                         positive_attention_mask = tokenized_positive['attention_mask'].unsqueeze(1)
                         positive_token_type_ids = tokenized_positive['token_type_ids'].unsqueeze(1)
 
-                        negative_input_ids = tokenized_negative['input_ids'].unsqueeze(1)
+                        negative_input_ids = tokenized_negative['input_ids'].unsqueeze(1) # (8, 1, 512)
                         negative_attention_mask = tokenized_negative['attention_mask'].unsqueeze(1)
                         negative_token_type_ids = tokenized_negative['token_type_ids'].unsqueeze(1)
 
-                        candidate_input_ids = torch.cat((negative_input_ids, positive_input_ids), dim=1)
+                        candidate_input_ids = torch.cat((negative_input_ids, positive_input_ids), dim=1) # (8, 2, 512)
                         candidate_attention_mask = torch.cat((negative_attention_mask, positive_attention_mask), dim=1)
                         candidate_token_type_ids = torch.cat((negative_token_type_ids, positive_token_type_ids), dim=1)
 
@@ -1841,14 +1860,14 @@ class TrainWholeModel:
                                                      idx=torch.tensor(list(range(tokenized_query['input_ids'].shape[0]))))
 
                     train_datasets = (dataset, )
-                    if not os.path.exists("./dataset"):
-                        os.makedirs("./dataset")
+                    if not os.path.exists(root_path + "dataset"):
+                        os.makedirs(root_path + "dataset")
 
                     save_name = save_load_prefix + self.dataset_name + "_train"
                     if self.in_batch:
                         save_name += in_batch_suffix
 
-                    torch.save({'dataset': dataset}, "./dataset/" + save_name)
+                    torch.save({'dataset': dataset}, root_path + "dataset/" + save_name)
 
                     print(f"Processed dataset is saved at ./dataset/{save_name}")
                     print("*" * 20 + f"Encoding {tokenized_query['input_ids'].shape} texts finished!" + "*" * 20)
@@ -1864,10 +1883,10 @@ class TrainWholeModel:
 
             if not get_val:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_val"):
-                val_datasets = (torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_val")['dataset'],)
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_val"):
+                val_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_val")['dataset'],)
             else:
-                string_val_dataset = torch.load("./dataset/string_msmarco_top1000_dev")
+                string_val_dataset = torch.load(root_path + "dataset/string_msmarco_top1000_dev")
 
                 val_datasets = (process_val_test_func(data=string_val_dataset,
                                                       save_name=save_load_prefix + self.dataset_name + "_val",
@@ -1878,10 +1897,10 @@ class TrainWholeModel:
             # read test data. exist? read!--------------------------------------------------
             # if not get_test:
             #     pass
-            # elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_test"):
-            #     test_datasets = (torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_test")['dataset'],)
+            # elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_test"):
+            #     test_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_test")['dataset'],)
             # else:
-            #     string_test_dataset = datasets.load_from_disk("./dataset/string_test_" + self.dataset_name)
+            #     string_test_dataset = datasets.load_from_disk(root_path + "dataset/string_test_" + self.dataset_name)
             #
             #     test_datasets = (process_val_test_func(data=string_test_dataset,
             #                                            save_name=save_load_prefix + self.dataset_name + "_test",
@@ -1889,7 +1908,7 @@ class TrainWholeModel:
             #                                            b_column_name="candidates",
             #                                            candidate_num=1000),)
             test_datasets = None
-        elif self.dataset_name == 'hard_msmarco':
+        elif self.dataset_name == 'hard_msmarco': #TODO!
             # check
             if not pair_flag and self.train_candidate_num < 1:
                 raise Exception("Should designate train_candidate_num if you want train cross model on match task!!")
@@ -1898,13 +1917,15 @@ class TrainWholeModel:
             # read training data. exist? read!--------------------------------------------------
             if not get_train:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_train"):
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_train"):
+                print("Loading hard_msmarco_train from disk...")
                 train_datasets = (
-                torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_train")[
+                torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_train")[
                     'dataset'],)
-            else:
+            else: # hard_msmarco 
+                print("Processing hard_msmarco_train...")
                 if pair_flag:
-                    tokenized_train_data_dict = torch.load("./dataset/tokenized_hard_msmarco_train")
+                    tokenized_train_data_dict = torch.load(root_path + "dataset/tokenized_hard_msmarco_train")
 
                     dataset = MSMARCODataset(queries_ids=tokenized_train_data_dict['queries_ids'],
                                              qid_2_tensors=tokenized_train_data_dict['qid_2_tensors'],
@@ -1913,12 +1934,12 @@ class TrainWholeModel:
                                              pid_2_tensors=tokenized_train_data_dict['pid_2_tensors'])
 
                     train_datasets = (dataset, )
-                    if not os.path.exists("./dataset"):
-                        os.makedirs("./dataset")
+                    if not os.path.exists(root_path + "dataset"):
+                        os.makedirs(root_path + "dataset")
 
                     save_name = save_load_prefix + self.dataset_name + "_train"
 
-                    torch.save({'dataset': dataset}, "./dataset/" + save_name)
+                    torch.save({'dataset': dataset}, root_path + "dataset/" + save_name)
 
                     print(f"Processed dataset is saved at ./dataset/{save_name}")
                 else:
@@ -1933,10 +1954,10 @@ class TrainWholeModel:
 
             if not get_val:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + "msmarco" + "_val"):
-                val_datasets = (torch.load("./dataset/" + save_load_prefix + "msmarco" + "_val")['dataset'],)
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + "msmarco" + "_val"):
+                val_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + "msmarco" + "_val")['dataset'],)
             else:
-                string_val_dataset = torch.load("./dataset/string_msmarco_top1000_dev")
+                string_val_dataset = torch.load(root_path + "dataset/string_msmarco_top1000_dev")
 
                 val_datasets = (process_val_test_func(data=string_val_dataset,
                                                       save_name=save_load_prefix + "msmarco" + "_val",
@@ -1954,12 +1975,12 @@ class TrainWholeModel:
             # read training data. exist? read!--------------------------------------------------
             if not get_train:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_train" + save_load_suffix):
-                train_datasets = (torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_train" + save_load_suffix)['dataset'],)
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_train" + save_load_suffix):
+                train_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_train" + save_load_suffix)['dataset'],)
             else:
                 if pair_flag:
                     string_train_dataset = datasets.load_from_disk(
-                        "./dataset/string_bi_train_" + self.dataset_name)
+                        root_path + "dataset/string_bi_train_" + self.dataset_name)
 
                     train_datasets = (self.__tokenize_match_bi_data_then_save(data=string_train_dataset,
                                                                               save_name=save_load_prefix + self.dataset_name + "_train",
@@ -1967,7 +1988,7 @@ class TrainWholeModel:
                                                                               b_column_name="sentence_b"),)
                 else:
                     string_train_dataset = datasets.load_from_disk(
-                        "./dataset/string_cross_train_" + self.dataset_name)
+                        root_path + "dataset/string_cross_train_" + self.dataset_name)
 
                     train_datasets = (self.__tokenize_match_cross_data_then_save(data=string_train_dataset,
                                                                                  save_name=save_load_prefix + self.dataset_name + "_train",
@@ -1984,10 +2005,10 @@ class TrainWholeModel:
 
             if not get_val:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_val"):
-                val_datasets = (torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_val")['dataset'],)
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_val"):
+                val_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_val")['dataset'],)
             else:
-                string_val_dataset = datasets.load_from_disk("./dataset/string_dev_" + self.dataset_name)
+                string_val_dataset = datasets.load_from_disk(root_path + "dataset/string_dev_" + self.dataset_name)
 
                 val_datasets = (process_val_test_func(data=string_val_dataset,
                                                       save_name=save_load_prefix + self.dataset_name + "_val",
@@ -1998,10 +2019,10 @@ class TrainWholeModel:
             # read test data. exist? read!--------------------------------------------------
             if not get_test:
                 pass
-            elif os.path.exists("./dataset/" + save_load_prefix + self.dataset_name + "_test"):
-                test_datasets = (torch.load("./dataset/" + save_load_prefix + self.dataset_name + "_test")['dataset'],)
+            elif os.path.exists(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_test"):
+                test_datasets = (torch.load(root_path + "dataset/" + save_load_prefix + self.dataset_name + "_test")['dataset'],)
             else:
-                string_test_dataset = datasets.load_from_disk("./dataset/string_test_" + self.dataset_name)
+                string_test_dataset = datasets.load_from_disk(root_path + "dataset/string_test_" + self.dataset_name)
 
                 test_datasets = (process_val_test_func(data=string_test_dataset,
                                                       save_name=save_load_prefix + self.dataset_name + "_test",
@@ -2033,6 +2054,8 @@ class TrainWholeModel:
             model = PolyEncoder(config=self.config)
         elif self.model_class in ['QAMatchModel']:
             model = QAMatchModel(config=self.config)
+        elif self.model_class in ['CMCModel']:
+            model = CMCModel(config=self.config)
         elif self.model_class in ['ColBERT']:
             model = ColBERT(config=self.config)
         elif self.model_class in ['MatchParallelEncoder']:
@@ -2132,7 +2155,7 @@ class TrainWholeModel:
         if self.__match_string_list(args.pretrained_bert_path, ['prajjwal1/bert-small', 'google/bert_uncased_L-6_H-512_A-8', 'google/bert_uncased_L-8_H-512_A-8', 'prajjwal1/bert-medium']):
             word_embedding_len = 512
             sentence_embedding_len = 512
-        elif self.__match_string_list(args.pretrained_bert_path, ['bert-base-uncased']):
+        elif self.__match_string_list(args.pretrained_bert_path, ['bert-base-uncased', 'Luyu/co-condenser-marco-retriever']):
             word_embedding_len = 768
             sentence_embedding_len = 768
         elif self.__match_string_list(args.pretrained_bert_path, ['google/bert_uncased_L-2_H-128_A-2']):
@@ -2142,13 +2165,15 @@ class TrainWholeModel:
             raise Exception("word_embedding_len, sentence_embedding_len is needed!")
 
         # add model
-        if self.model_class in ['QAClassifierModel', 'QAMatchModel']:
+        if self.model_class in ['QAClassifierModel', 'QAMatchModel', 'CMCModel']:
             config = QAClassifierModelConfig(len(self.tokenizer),
                                          pretrained_bert_path=args.pretrained_bert_path,
                                          num_labels=args.label_num,
                                          word_embedding_len=word_embedding_len,
                                          sentence_embedding_len=sentence_embedding_len,
-                                         composition=self.composition)
+                                         composition=self.composition,
+                                         teacher_loss=args.teacher_loss,
+                                         alpha=args.alpha)
         elif self.model_class in ['ColBERT']:
             config = ColBERTConfig(pretrained_bert_path=args.pretrained_bert_path,
                                    word_embedding_len=word_embedding_len,
@@ -2202,71 +2227,79 @@ class TrainWholeModel:
         if self.model_class in ['QAClassifierModel']:
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
                 # 这几个一样
-                {'params': model.self_attention_weight_layer.parameters(), 'lr': 5e-5},
-                {'params': model.value_layer.parameters(), 'lr': 5e-5},
+                {'params': model.self_attention_weight_layer.parameters(), 'lr': 1e-5},
+                {'params': model.value_layer.parameters(), 'lr': 1e-5},
                 # 这个不设定
-                {'params': model.classifier.parameters(), 'lr': 5e-5}
+                {'params': model.classifier.parameters(), 'lr': 1e-5}
             ]
         elif self.model_class in ['CrossBERT', 'MatchCrossBERT']:
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
             ]
         elif self.model_class in ['ClassifyParallelEncoder', 'DisenClassifyParallelEncoder']:
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
-                {'params': model.composition_layer.parameters(), 'lr': 5e-5},
-                {'params': model.decoder.parameters(), 'lr': 5e-5},
-                {'params': model.classifier.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
+                {'params': model.composition_layer.parameters(), 'lr': 1e-5},
+                {'params': model.decoder.parameters(), 'lr': 1e-5},
+                {'params': model.classifier.parameters(), 'lr': 1e-5},
             ]
         elif self.model_class in ['CLSClassifyParallelEncoder', 'DisenCLSClassifyParallelEncoder']:
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
-                {'params': model.context_cls, 'lr': 5e-5},
-                {'params': model.decoder.parameters(), 'lr': 5e-5},
-                {'params': model.classifier.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
+                {'params': model.context_cls, 'lr': 1e-5},
+                {'params': model.decoder.parameters(), 'lr': 1e-5},
+                {'params': model.classifier.parameters(), 'lr': 1e-5},
             ]
         elif self.model_class in ['MatchParallelEncoder', 'DisenMatchParallelEncoder']:
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
-                {'params': model.composition_layer.parameters(), 'lr': 5e-5},
-                {'params': model.decoder.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
+                {'params': model.composition_layer.parameters(), 'lr': 1e-5},
+                {'params': model.decoder.parameters(), 'lr': 1e-5},
             ]
         elif self.model_class in ['CLSMatchParallelEncoder', 'DisenCLSMatchParallelEncoder']:
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
-                {'params': model.context_cls, 'lr': 5e-5},
-                {'params': model.decoder.parameters(), 'lr': 5e-5},
-                # {'params': model.classifier.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
+                {'params': model.context_cls, 'lr': 1e-5},
+                {'params': model.decoder.parameters(), 'lr': 1e-5},
+                # {'params': model.classifier.parameters(), 'lr': 1e-5},
             ]
         elif self.model_class == 'PolyEncoder':
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
-                {'params': model.query_composition_layer.parameters(), 'lr': 5e-5},
-                {'params': model.classifier.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
+                {'params': model.query_composition_layer.parameters(), 'lr': 1e-5},
+                {'params': model.classifier.parameters(), 'lr': 1e-5},
             ]
         elif self.model_class == 'ColBERT':
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert.parameters(), 'lr': 5e-5},
-                {'params': model.linear.parameters(), 'lr': 5e-5},
+                {'params': model.bert.parameters(), 'lr': 1e-5},
+                {'params': model.linear.parameters(), 'lr': 1e-5},
             ]
         elif self.model_class == 'QAMatchModel':
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
             ]
+        elif self.model_class == 'CMCModel':
+            parameters_dict_list = [
+                {'params': model.qry_bert_model.parameters(), 'lr': 1e-5},
+                {'params': model.can_bert_model.parameters(), 'lr': 1e-5},
+                {'params': model.extend_multi_transformerencoder.parameters(), 'lr': 1e-5},
+                {'params': model.extend_multi_transformerencoderlayer.parameters(), 'lr': 1e-5},
+            ]
+            
         elif self.model_class in ['ClassifyDeformer', 'MatchDeformer']:
             parameters_dict_list = [
                 # 这几个一样
-                {'params': model.bert_model.parameters(), 'lr': 5e-5},
+                {'params': model.bert_model.parameters(), 'lr': 1e-5},
             ]
         else:
             raise Exception("No optimizer supported for this model class!")
@@ -2276,28 +2309,28 @@ class TrainWholeModel:
             if self.model_class in ['ClassifyParallelEncoder', 'DisenClassifyParallelEncoder']:
                 parameters_dict_list = [
                     # 这几个一样
-                    {'params': model.decoder.parameters(), 'lr': 1e-4},
-                    {'params': model.composition_layer.parameters(), 'lr': 1e-4},
-                    {'params': model.classifier.parameters(), 'lr': 1e-4},
+                    {'params': model.decoder.parameters(), 'lr': 1e-5},
+                    {'params': model.composition_layer.parameters(), 'lr': 1e-5},
+                    {'params': model.classifier.parameters(), 'lr': 1e-5},
                 ]
             elif self.model_class in ['CLSClassifyParallelEncoder', 'DisenCLSClassifyParallelEncoder']:
                 parameters_dict_list = [
                     # 这几个一样
-                    {'params': model.decoder.parameters(), 'lr': 1e-4},
-                    {'params': model.context_cls, 'lr': 1e-4},
-                    {'params': model.classifier.parameters(), 'lr': 1e-4},
+                    {'params': model.decoder.parameters(), 'lr': 1e-5},
+                    {'params': model.context_cls, 'lr': 1e-5},
+                    {'params': model.classifier.parameters(), 'lr': 1e-5},
                 ]
             elif self.model_class in ['MatchParallelEncoder', 'DisenMatchParallelEncoder']:
                 parameters_dict_list = [
                     # 这几个一样
-                    {'params': model.composition_layer.parameters(), 'lr': 1e-4},
-                    {'params': model.decoder.parameters(), 'lr': 1e-4},
+                    {'params': model.composition_layer.parameters(), 'lr': 1e-5},
+                    {'params': model.decoder.parameters(), 'lr': 1e-5},
                 ]
             elif self.model_class in ['CLSMatchParallelEncoder', 'DisenCLSMatchParallelEncoder']:
                 parameters_dict_list = [
                     # 这几个一样
-                    {'params': model.context_cls, 'lr': 1e-4},
-                    {'params': model.decoder.parameters(), 'lr': 1e-4},
+                    {'params': model.context_cls, 'lr': 1e-5},
+                    {'params': model.decoder.parameters(), 'lr': 1e-5},
                 ]
             else:
                 raise Exception("Have Two Stage But No optimizer supported for this model class!")
@@ -2305,7 +2338,7 @@ class TrainWholeModel:
         # if to restore, it will be printed in other places
         if not self.restore_flag:
             print(parameters_dict_list)
-        optimizer = torch.optim.AdamW(parameters_dict_list, lr=5e-5)
+        optimizer = torch.optim.AdamW(parameters_dict_list, lr=1e-5) # jcy 원래 5e-5(4581), 4583는 1e-5로 돌리고 command line first stage lr도 0.00001로 해두고 context_num 64로
         print("*"*30)
 
         return optimizer
@@ -2475,15 +2508,16 @@ class TrainWholeModel:
             b_attention_mask=b_attention_mask, train_flag=True, match_train=True,
             no_aggregator=self.no_aggregator, no_enricher=self.no_enricher,
             no_apex=self.no_apex,
-            optimizer=optimizer
+            optimizer=optimizer,
+            is_hard_msmarco=(self.dataset_name == 'hard_msmarco'),
         )
 
         # 误差反向传播
-        # if not APEX_FLAG or self.no_apex:
-        #     step_loss.backward()
-        # else:
-        #     with amp.scale_loss(step_loss, optimizer) as scaled_loss:
-        #         scaled_loss.backward()
+        if not APEX_FLAG or self.no_apex:
+            step_loss.backward()
+        else:
+            with amp.scale_loss(step_loss, optimizer) as scaled_loss:
+                scaled_loss.backward()
         #
         # if self.model_class in ['MatchParallelEncoder', 'CLSMatchParallelEncoder',
                                 # 'DisenMatchParallelEncoder', 'DisenCLSMatchParallelEncoder']:
@@ -2494,7 +2528,7 @@ class TrainWholeModel:
         scheduler.step()
         return (step_loss,)
 
-    # 支持先计算candidate的表征，接着按块进行query和candidate的匹配
+    # 支持先计算candidate的表征，接着按块进行query和candidate的匹配 # 주석 : candidate의 representation을 먼저 계산하고, 그 다음 query와 candidate를 블록 단위로 일치시킴
     def __efficient_match_train_step_for_qa_input(self, batch, optimizer, now_batch_num, scheduler, **kwargs):
         model = self.model.module if hasattr(self.model, 'module') else self.model
 
@@ -3042,11 +3076,11 @@ class TrainWholeModel:
                                           b_attention_mask=encoded_b_text['attention_mask'],
                                           idx=torch.tensor(all_index), label=torch.tensor(all_labels))
 
-        if not os.path.exists("./dataset"):
-            os.makedirs("./dataset")
+        if not os.path.exists(root_path + "dataset"):
+            os.makedirs(root_path + "dataset")
 
-        # dataset.save_to_disk("./dataset/" + save_name)
-        torch.save({'dataset': dataset}, "./dataset/" + save_name)
+        # dataset.save_to_disk(root_path + "dataset/" + save_name)
+        torch.save({'dataset': dataset}, root_path + "dataset/" + save_name)
         print(f"Processed dataset is saved at ./dataset/{save_name}")
 
         return dataset
@@ -3075,10 +3109,10 @@ class TrainWholeModel:
                                           attention_mask=encoded_texts['attention_mask'],
                                           idx=torch.tensor(all_index), label=torch.tensor(all_labels))
 
-        if not os.path.exists("./dataset/"):
-            os.makedirs("./dataset/")
+        if not os.path.exists(root_path + "dataset/"):
+            os.makedirs(root_path + "dataset/")
 
-        torch.save({'dataset': dataset}, "./dataset/" + save_name)
+        torch.save({'dataset': dataset}, root_path + "dataset/" + save_name)
 
         print(f"Processed dataset is saved at ./dataset/{save_name}")
 
@@ -3130,10 +3164,10 @@ class TrainWholeModel:
                                      b_input_ids=encoded_b_text['input_ids'],  b_token_type_ids=encoded_b_text['token_type_ids'],
                                      b_attention_mask=encoded_b_text['attention_mask'], idx=torch.tensor(all_index))
 
-        if not os.path.exists("./dataset"):
-            os.makedirs("./dataset")
+        if not os.path.exists(root_path + "dataset"):
+            os.makedirs(root_path + "dataset")
 
-        torch.save({'dataset': dataset}, "./dataset/" + save_name)
+        torch.save({'dataset': dataset}, root_path + "dataset/" + save_name)
 
         print(f"Processed dataset is saved at ./dataset/{save_name}")
         print(f'context_max_len: {this_dataset_max_len}')
@@ -3147,7 +3181,6 @@ class TrainWholeModel:
             second_seq_max_len = self.text_max_len - self.first_seq_max_len
         else:
             first_seq_max_len, second_seq_max_len = self.text_max_len, self.text_max_len
-        print(f"first_seq_max_len: {first_seq_max_len}, second_seq_max_len: {second_seq_max_len}")
 
         # avoid out of memory
         split_num = 10
@@ -3165,6 +3198,8 @@ class TrainWholeModel:
             first_seq_max_len, second_seq_max_len = 32, 180
         else:
             pids = None
+        print(f"first_seq_max_len: {first_seq_max_len}, second_seq_max_len: {second_seq_max_len}")
+
 
         # tokenize block by block, context should be truncated from head
         query_step = math.ceil(len(all_a_text) / split_num)
@@ -3202,8 +3237,8 @@ class TrainWholeModel:
 
             # get pids
             this_pids = []
-            if self.dataset_name in ["msmarco", 'hard_msmarco']:
-                this_pids = pids[index][-candidate_num:]
+            if self.dataset_name in ["msmarco", 'hard_msmarco']: 
+                this_pids = pids[index][-candidate_num:] 
 
             # padding with "" and -1
             if len(this_candidates) < candidate_num:
@@ -3270,10 +3305,10 @@ class TrainWholeModel:
                                          b_attention_mask=final_candidate_attention_mask.view(-1, candidate_num, final_candidate_attention_mask.shape[-1]),
                                          idx=torch.tensor(all_index))
 
-        if not os.path.exists("./dataset"):
-            os.makedirs("./dataset")
+        if not os.path.exists(root_path + "dataset"):
+            os.makedirs(root_path + "dataset")
 
-        torch.save({'dataset': dataset}, "./dataset/" + save_name)
+        torch.save({'dataset': dataset}, root_path + "dataset/" + save_name)
 
         print(f"Processed dataset is saved at ./dataset/{save_name}")
         print(f'context_max_len: {this_dataset_max_len}')
@@ -3349,10 +3384,10 @@ class TrainWholeModel:
 
         dataset = SingleInputDataset(input_ids=final_input_ids, token_type_ids=final_token_type_ids, attention_mask=final_attention_mask, idx=torch.tensor(all_index))
 
-        if not os.path.exists("./dataset"):
-            os.makedirs("./dataset")
+        if not os.path.exists(root_path + "dataset"):
+            os.makedirs(root_path + "dataset")
 
-        torch.save({'dataset': dataset}, "./dataset/" + save_name + suffix)
+        torch.save({'dataset': dataset}, root_path + "dataset/" + save_name + suffix)
 
         print(f"Processed dataset is saved at ./dataset/{save_name + suffix}")
         print(f'this_dataset_max_len: {this_dataset_max_len}')

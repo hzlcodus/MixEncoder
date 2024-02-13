@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 5, in <module>
+    from nlp_trainer import TrainWholeModel
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 8, in <module>
+    from torch.utils.data import DataLoader
+  File "/home/testuser/miniconda3/lib/python3.11/site-packages/torch/__init__.py", line 235, in <module>
+    from torch._C import *  # noqa: F403
+    ^^^^^^^^^^^^^^^^^^^^^^
+ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /home/testuser/miniconda3/lib/python3.11/site-packages/torch/lib/libtorch_python.so)

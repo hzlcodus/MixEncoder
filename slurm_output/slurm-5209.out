@@ -1,0 +1,27 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=10, model_class='CMCModel', dataset_name='dstc7', label_num=0, composition='pooler', context_num=1, pretrained_bert_path='bert-base-uncased', model_save_prefix='', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=True, do_test=True, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='1', restore=False, val_batch_size=2, train_batch_size=8, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=False, only_final=False, load_model=True, load_model_path='/home/cme/MixEncoder/model/withoutreg4-CMCModel_dstc7', save_model_dict='./model/', last_model_dict='./last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, teacher_loss=False, alpha=0.5, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+---------------------- create model ----------------------
+model is loaded from /home/cme/MixEncoder/model/withoutreg4-CMCModel_dstc7
+--------------------- model  created ---------------------
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 140, in <module>
+    my_train_model.do_test(model_save_path=my_args.save_model_dict + "/" + my_args.model_save_prefix +
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 510, in do_test
+    _ = self.match_val_test_body(this_datasets=test_datasets,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 1194, in match_val_test_body
+    self.model = self.load_model(self.model, model_save_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 1512, in load_model
+    checkpoint = torch.load(load_path)
+                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/torch/serialization.py", line 771, in load
+    with _open_file_like(f, 'rb') as opened_file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/torch/serialization.py", line 270, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/torch/serialization.py", line 251, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+                                     ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: './model//CMCModel_dstc7'

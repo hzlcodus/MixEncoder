@@ -5,6 +5,7 @@ import time
 from nlp_trainer import TrainWholeModel
 from my_function import get_elapse_time, set_seed
 
+root_path = "/data/cme/fast_match/"
 
 def read_arguments():
 	parser = argparse.ArgumentParser()
@@ -69,14 +70,18 @@ def read_arguments():
 	parser.add_argument("--load_model", "-l", action="store_true", default=False)
 	parser.add_argument("--load_model_path", type=str, help="load classifier")
 
-	parser.add_argument("--save_model_dict", default="./model/", type=str)
-	parser.add_argument("--last_model_dict", default="./last_model/", type=str)
+	parser.add_argument("--save_model_dict", default="/data/cme/mix/model/", type=str)
+	parser.add_argument("--last_model_dict", default="/data/cme/mix/last_model/", type=str)
 
 	parser.add_argument("--load_middle", action="store_true", default=False)
 
 	parser.add_argument("--distill", action="store_true", default=False)
 	parser.add_argument("--teacher_path", default="./model/teacher", type=str)
 	parser.add_argument("--mlm", action="store_true", default=False)
+
+	# jcy : regularization, teacher loss
+	parser.add_argument("--teacher_loss", action="store_true", default=False)
+	parser.add_argument("--alpha", default=0.5, type=float)
 
 	# 设置并行需要改的
 	parser.add_argument('--local_rank', type=int, default=0, help='node rank for distributed training')
@@ -96,17 +101,17 @@ if __name__ == '__main__':
 	my_args = read_arguments()
 	my_args.no_apex = True
 
-	# 设置随机种子
+	# 设置随机种子 # 주석: seed 설정
 	set_seed(my_args.seed)
 
-	# begin time
+	# begin time # 주석: 시작 시간
 	begin_time = time.time()
 
-	# 创建训练类
+	# 创建训练类 # 주석: TrainWholeModel 클래스 생성
 	my_train_model = TrainWholeModel(my_args)
 
-	# 设置训练参数
-	my_train_two_stage_flag = False
+	# 设置训练参数 # 주석: 2 stage 학습을 위한 flag
+	my_train_two_stage_flag = False 
 	# add model
 	if my_args.model_class in ['MatchParallelEncoder', 'CLSMatchParallelEncoder',
 							   'CLSClassifyParallelEncoder', 'DisenCLSMatchParallelEncoder']:
@@ -122,8 +127,8 @@ if __name__ == '__main__':
 		os.makedirs(my_args.save_model_dict)
 	if not os.path.exists(my_args.last_model_dict):
 		os.makedirs(my_args.last_model_dict)
-	if not os.path.exists("./dataset/"):
-		os.makedirs("./dataset/")
+	if not os.path.exists(root_path + "dataset/"):
+		os.makedirs(root_path + "dataset/")
 
 	# 训练
 	if not my_args.no_train:
@@ -136,10 +141,10 @@ if __name__ == '__main__':
 											   my_args.model_class + "_" +
 											   my_args.dataset_name, do_val=my_args.do_val)
 
-	# 测速
+	# 测速 
 	if my_args.do_real_test:
 		if my_args.dataset_name in ['dstc7', 'ubuntu', 'msmarco']:
-			if my_args.model_class in ['QAMatchModel', 'MatchParallelEncoder', 'PolyEncoder', 'MatchDeformer',
+			if my_args.model_class in ['QAMatchModel', 'CMCModel', 'MatchParallelEncoder', 'PolyEncoder', 'MatchDeformer',
 									   'DisenCLSMatchParallelEncoder', 'CLSMatchParallelEncoder', 'ColBERT']:
 				my_train_model.match_bi_real_test(
 					model_save_path=my_args.save_model_dict + "/" + my_args.model_save_prefix +

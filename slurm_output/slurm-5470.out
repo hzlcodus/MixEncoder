@@ -1,0 +1,33 @@
+args: Namespace(seed=42, text_max_len=512, num_train_epochs=3, model_class='QAMatchModel', dataset_name='hard_msmarco', label_num=0, composition='pooler', context_num=1, pretrained_bert_path='Luyu/co-condenser-marco-retriever', model_save_prefix='no_reg_v1-', top_layer_num=3, first_seq_max_len=256, train_candidate_num=-1, used_layers=None, one_stage=False, evaluate_epoch=1, no_aggregator=False, no_enricher=False, no_apex=False, no_train=False, do_test=False, do_real_test=False, query_block_size=200, do_val=False, use_cpu=False, in_batch=False, nvidia_number='1', restore=False, val_batch_size=2, train_batch_size=8, gradient_accumulation_steps=1, step_max_query_num=8, clean_graph=False, no_initial_test=True, only_final=False, load_model=False, load_model_path=None, save_model_dict='/data/cme/mix/model/', last_model_dict='/data/cme/mix/last_model/', load_middle=False, distill=False, teacher_path='./model/teacher', mlm=False, teacher_loss=False, alpha=0.5, local_rank=0, data_parallel=False, data_distribute=False, dataset_split_num=20, first_stage_lr=0.3)
+local rank: 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ begin one stage train ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------- create model ----------------------
+--------------------- model  created ---------------------
+train_step_function is match_train_step_for_qa_input
+[{'params': <generator object Module.parameters at 0x7f76c679af80>, 'lr': 1e-05}]
+******************************
+Loading hard_msmarco_train from disk...
+**************************************************
+******************** 1 ********************
+**************************************************
+Training epoch is 3
+**************************************************
+Train 3 epochs, Block num 20, Accumulate num 1, Total update 186018, Remain update 186018
+
+  0%|          | 0/62006 [00:00<?, ?it/s]  0%|          | 0/62006 [00:01<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/cme/MixEncoder/nlp_main.py", line 135, in <module>
+    my_train_model.train(train_two_stage_flag=my_train_two_stage_flag,
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 246, in train
+    step_train_returns = train_step_function(batch=batch,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_trainer.py", line 2502, in __match_train_step_for_qa_input
+    step_loss = self.model(
+                ^^^^^^^^^^^
+  File "/home/chaeyeonjin/miniconda3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cme/MixEncoder/nlp_model.py", line 344, in forward
+    loss = F.log_softmax(dot_product, dim=-1) * mask
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+RuntimeError: The size of tensor a (50) must match the size of tensor b (8) at non-singleton dimension 1
